@@ -1,5 +1,6 @@
 import { Client, Collection, GatewayIntentBits, Partials } from 'discord.js';
-import { token, mongoURI } from '../config.json';
+import { node_env, token, mongoURI } from '../config.json';
+import { RubbyLogger } from './utils/logger';
 import mongoose from 'mongoose';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -14,6 +15,12 @@ const client = new Client({
 });
 
 client.commands = new Collection();
+client.logger = RubbyLogger({
+	logName: 'Rubby',
+	level: 'silly',
+	directory: node_env === 'production' ? 'dist' : 'src',
+});
+
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
 
@@ -28,8 +35,8 @@ for (const folder of commandFolders) {
 		if ('data' in command && 'execute' in command) {
 			client.commands.set(command.data.name, command);
 		} else {
-			console.log(
-				`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
+			client.logger.warn(
+				`The command at ${filePath} is missing a required "data" or "execute" property.`
 			);
 		}
 	}
@@ -53,9 +60,9 @@ for (const file of eventFiles) {
 (async () => {
 	try {
 		await mongoose.connect(mongoURI);
-		console.log('Connected to MongoDB');
+		client.logger.info('Connected to MongoDB');
 	} catch (error) {
-		console.error(error);
+		client.logger.error(error);
 	}
 })();
 
