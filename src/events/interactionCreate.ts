@@ -8,7 +8,7 @@ module.exports = {
 
 			if (!command) {
 				interaction.client.logger.error(
-					`No command matching ${interaction.commandName} was found.`
+					`Aucune commande correspondant à ${interaction.commandName} n'a été trouvée.`
 				);
 				return;
 			}
@@ -31,7 +31,7 @@ module.exports = {
 				if (now < expirationTime) {
 					const expiredTimestamp = Math.round(expirationTime / 1000);
 					return interaction.reply({
-						content: `Please wait, you are on a cooldown for \`${command.data.name}\`. You can use it again <t:${expiredTimestamp}:R>.`,
+						content: `Veuillez patienter, vous êtes en cooldown pour \`${command.data.name}\`. Vous pouvez l'utiliser à nouveau <t:${expiredTimestamp}:R>.`,
 						ephemeral: true,
 					});
 				}
@@ -46,12 +46,14 @@ module.exports = {
 				console.error(error);
 				if (interaction.replied || interaction.deferred) {
 					await interaction.followUp({
-						content: 'There was an error while executing this command!',
+						content:
+							"Une erreur s'est produite lors de l'exécution de cette commande !",
 						ephemeral: true,
 					});
 				} else {
 					await interaction.reply({
-						content: 'There was an error while executing this command!',
+						content:
+							"Une erreur s'est produite lors de l'exécution de cette commande !",
 						ephemeral: true,
 					});
 				}
@@ -61,7 +63,7 @@ module.exports = {
 
 			if (!command) {
 				interaction.client.logger.error(
-					`No command matching ${interaction.commandName} was found.`
+					`Aucune commande correspondant à ${interaction.commandName} n'a été trouvée.`
 				);
 				return;
 			}
