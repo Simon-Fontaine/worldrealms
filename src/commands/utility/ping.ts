@@ -1,6 +1,6 @@
 import {
 	SlashCommandBuilder,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	EmbedBuilder,
 	Colors,
 } from 'discord.js';
@@ -9,7 +9,7 @@ module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('ping')
 		.setDescription('Replies with Pong!'),
-	execute(interaction: CommandInteraction) {
+	execute(interaction: ChatInputCommandInteraction) {
 		const roundTripLatency = (Date.now() - interaction.createdTimestamp) / 1000;
 		const websocketLatency =
 			interaction.client.ws.ping === -1 ? 0 : interaction.client.ws.ping / 1000;
