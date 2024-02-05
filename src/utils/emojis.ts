@@ -42,4 +42,5 @@ export enum Emojis {
 	speechmessage = '<:speechmessage:1201903832120954932>',
 	pin = '<:pin:1201903829315240016>',
 	clock = '<:clock:1201904955481669662>',
+	blue_hexagon = '<:blue_hexagon:1204057112947200080>',
 }

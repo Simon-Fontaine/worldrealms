@@ -12,11 +12,14 @@ import {
 	ChannelSelectMenuInteraction,
 	ComponentType,
 	ChannelType,
+	EmbedBuilder,
+	Colors,
 } from 'discord.js';
 import { successEmbed, errorEmbed } from '../../utils/embed';
 import archiveSchema from '../../models/archive.schema';
 import ticketPanelSchema from '../../models/ticket-panel.schema';
 import dayjs from 'dayjs';
+import { Emojis } from '../../utils/emojis';
 
 const defaultID = 'Aucun panel trouvé.';
 
@@ -168,31 +171,26 @@ module.exports = {
 			case 'archive':
 				{
 					await interaction.deferReply({ ephemeral: true });
+
 					const archive = await archiveSchema.findOneAndUpdate(
-						{
-							_id: 'archive',
-						},
-						{
-							_id: 'archive',
-							user_channel: '',
-							staff_channel: '',
-						},
-						{
-							upsert: true,
-						}
+						{ _id: 'archive' },
+						{},
+						{ upsert: true, new: true }
 					);
 
-					const userChannelSelector = new ChannelSelectMenuBuilder()
-						.setCustomId('user-channel')
-						.setChannelTypes(ChannelType.GuildText)
-						.setMaxValues(1)
-						.setMinValues(1);
+					let user_channel = archive.user_channel;
+					let staff_channel = archive.staff_channel;
 
-					const staffChannelSelector = new ChannelSelectMenuBuilder()
-						.setCustomId('staff-channel')
-						.setChannelTypes(ChannelType.GuildText)
-						.setMaxValues(1)
-						.setMinValues(1);
+					const createChannelSelector = (customId: string) => {
+						return new ChannelSelectMenuBuilder()
+							.setCustomId(customId)
+							.setChannelTypes(ChannelType.GuildText)
+							.setMaxValues(1)
+							.setMinValues(0);
+					};
+
+					const userChannelSelector = createChannelSelector('user-channel');
+					const staffChannelSelector = createChannelSelector('staff-channel');
 
 					const rows = [userChannelSelector, staffChannelSelector].map(
 						(field) =>
@@ -201,48 +199,75 @@ module.exports = {
 							)
 					);
 
-					const start = dayjs().add(30, 'seconds');
+					const start = dayjs().add(15, 'seconds');
 
-					const createMessage = (
-						user_channel: string,
-						staff_channel: string
-					) => {
-						return successEmbed(
-							`Choisissez dans la liste de salons disponibles, vous avez <t:${start.unix()}:R>\n\nSalon utilisateur: <#${user_channel}>\nSalon staff: <#${staff_channel}>`
-						);
+					const buildEmbed = () => {
+						return new EmbedBuilder()
+							.setColor(Colors.Blurple)
+							.setDescription(
+								[
+									`Choisissez dans la liste de salons disponibles, vous avez <t:${start.unix()}:R>`,
+									'',
+									`${Emojis.blue_hexagon} Salon utilisateur: <#${user_channel}>`,
+									`${Emojis.blue_hexagon} Salon staff: <#${staff_channel}>`,
+								].join('\n')
+							);
 					};
 
 					const message = await interaction.editReply({
-						embeds: [
-							createMessage(archive.user_channel, archive.staff_channel),
-						],
+						embeds: [buildEmbed()],
 						components: rows,
 					});
 
+					const updateEmbed = (isUserChannel: boolean) => {
+						return buildEmbed().setDescription(
+							[
+								`Choisissez dans la liste de salons disponibles, vous avez <t:${start.unix()}:R>`,
+								'',
+								`${
+									isUserChannel ? Emojis.check_mark_green : Emojis.blue_hexagon
+								} Salon utilisateur: <#${user_channel}>`,
+								`${
+									isUserChannel ? Emojis.blue_hexagon : Emojis.check_mark_green
+								} Salon staff: <#${staff_channel}>`,
+							].join('\n')
+						);
+					};
+
+					const updateDatabaseAndMessage = async (
+						i: ChannelSelectMenuInteraction,
+						isUserChannel: boolean
+					) => {
+						await Promise.all([
+							archiveSchema.updateOne(
+								{ _id: 'archive' },
+								{
+									[isUserChannel ? 'user_channel' : 'staff_channel']:
+										i.values[0] === undefined ? null : i.values[0],
+								}
+							),
+							i.update({ embeds: [updateEmbed(isUserChannel)] }),
+						]);
+					};
+
 					const collector = message.createMessageComponentCollector({
 						componentType: ComponentType.ChannelSelect,
-						time: 30_000,
+						time: 15_000,
 					});
 
 					collector.on('collect', async (i) => {
+						const newValues = i.values[0] === undefined ? null : i.values[0];
+
 						if (i.customId === 'user-channel') {
-							archive.user_channel = i.values[0];
-							await archive.save();
-
-							await i.update({
-								embeds: [createMessage(i.values[0], archive.staff_channel)],
-							});
+							user_channel = newValues;
+							await updateDatabaseAndMessage(i, true);
 						} else if (i.customId === 'staff-channel') {
-							archive.staff_channel = i.values[0];
-							await archive.save();
-
-							await i.update({
-								embeds: [createMessage(archive.user_channel, i.values[0])],
-							});
+							staff_channel = newValues;
+							await updateDatabaseAndMessage(i, false);
 						}
 					});
 
-					collector.on('end', async (collected) => {
+					collector.on('end', async () => {
 						await interaction.editReply({
 							components: [],
 						});
