@@ -8,7 +8,7 @@ import {
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('ping')
-		.setDescription('Replies with Pong!'),
+		.setDescription('Donne la latence du bot.'),
 	execute(interaction: ChatInputCommandInteraction) {
 		const roundTripLatency = (Date.now() - interaction.createdTimestamp) / 1000;
 		const websocketLatency =

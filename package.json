@@ -4,10 +4,10 @@
 	"description": "",
 	"main": "dist/index.js",
 	"scripts": {
-		"tsc": "tsc --skipLibCheck -w --rootDir ./src --outDir ./dist",
-		"build": "git pull && tsc --skipLibCheck --rootDir ./src --outDir ./dist && pm2 restart \"Testing\" && pm2 logs \"Testing\"",
+		"tsc": "tsc --skipLibCheck --rootDir ./src --outDir ./dist",
+		"build": "git pull && yarn tsc && pm2 restart \"Testing\" && pm2 logs \"Testing\"",
 		"start": "tsc-watch --onSuccess \"node .\"",
-		"deploy": "tsc-watch --onSuccess \"node dist/deploy-commands.js\""
+		"deploy": "yarn tsc && node ./dist/deploy-commands.js"
 	},
 	"keywords": [],
 	"repository": "https://github.com/Simon-Fontaine/sc-bot.git",
