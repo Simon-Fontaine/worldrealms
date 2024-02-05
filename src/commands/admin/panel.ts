@@ -6,10 +6,19 @@ import {
 	TextInputBuilder,
 	TextInputStyle,
 	ActionRowBuilder,
+	AutocompleteInteraction,
+	TextChannel,
+	ChannelSelectMenuBuilder,
+	ChannelSelectMenuInteraction,
+	ComponentType,
+	ChannelType,
 } from 'discord.js';
 import { successEmbed, errorEmbed } from '../../utils/embed';
 import archiveSchema from '../../models/archive.schema';
 import ticketPanelSchema from '../../models/ticket-panel.schema';
+import dayjs from 'dayjs';
+
+const defaultID = 'Aucun panel trouvé.';
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -49,6 +58,15 @@ module.exports = {
 				.setName('archive')
 				.setDescription("Défini les salons d'archives de tickets.")
 		),
+	async autocomplete(interaction: AutocompleteInteraction) {
+		const panels = await ticketPanelSchema.find({});
+		if (panels.length <= 0)
+			return await interaction.respond([{ name: defaultID, value: defaultID }]);
+
+		return await interaction.respond(
+			panels.map((panel) => ({ name: panel._id, value: panel._id }))
+		);
+	},
 	async execute(interaction: ChatInputCommandInteraction) {
 		const subcommands = interaction.options.getSubcommand();
 
@@ -60,19 +78,19 @@ module.exports = {
 						.setTitle('Ticket Panel Creation');
 
 					const subject = new TextInputBuilder()
-						.setCustomId('panel-subject')
+						.setCustomId('subject')
 						.setLabel('sujet du panel')
 						.setMaxLength(250)
 						.setStyle(TextInputStyle.Short);
 
 					const buttons = new TextInputBuilder()
-						.setCustomId('panel-buttons')
+						.setCustomId('buttons')
 						.setLabel('boutons (séparés par une virgule)')
 						.setPlaceholder('Support, Aide, Autre')
 						.setStyle(TextInputStyle.Paragraph);
 
 					const styes = new TextInputBuilder()
-						.setCustomId('panel-styles')
+						.setCustomId('styles')
 						.setLabel('styles des boutons (séparés par une virgule)')
 						.setPlaceholder('rouge, vert, bleu, gris (par défaut)')
 						.setRequired(false)
@@ -89,14 +107,146 @@ module.exports = {
 				break;
 			case 'delete':
 				{
+					await interaction.deferReply({ ephemeral: true });
+					const id = interaction.options.getString('id');
+
+					if (id === defaultID)
+						return await interaction.followUp({
+							embeds: [errorEmbed('Veuillez à bien sélectionner un panel.')],
+						});
+
+					const panel = await ticketPanelSchema.findByIdAndDelete(id);
+					if (!panel)
+						return await interaction.followUp({
+							embeds: [errorEmbed('Aucun panel trouvé avec cet ID.')],
+						});
+
+					try {
+						const channel = interaction.guild?.channels.cache.get(
+							panel.channel_id
+						) as TextChannel;
+						const message = await channel.messages.fetch(panel._id);
+
+						await message.delete();
+					} catch (ignored) {}
+
+					await interaction.editReply({
+						embeds: [successEmbed('Panel supprimé avec succès.')],
+					});
 				}
 				break;
 			case 'pause':
 				{
+					await interaction.deferReply({ ephemeral: true });
+					const id = interaction.options.getString('id');
+
+					if (id === defaultID)
+						return await interaction.followUp({
+							embeds: [errorEmbed('Veuillez à bien sélectionner un panel.')],
+						});
+
+					const panel = await ticketPanelSchema.findById(id);
+					if (!panel)
+						return await interaction.followUp({
+							embeds: [errorEmbed('Aucun panel trouvé avec cet ID.')],
+						});
+
+					panel.paused = !panel.paused;
+					await panel.save();
+
+					await interaction.editReply({
+						embeds: [
+							successEmbed(
+								`Panel ${
+									panel.paused ? 'mis en pause' : 'relancé'
+								} avec succès.`
+							),
+						],
+					});
 				}
 				break;
 			case 'archive':
 				{
+					await interaction.deferReply({ ephemeral: true });
+					const archive = await archiveSchema.findOneAndUpdate(
+						{
+							_id: 'archive',
+						},
+						{
+							_id: 'archive',
+							user_channel: '',
+							staff_channel: '',
+						},
+						{
+							upsert: true,
+						}
+					);
+
+					const userChannelSelector = new ChannelSelectMenuBuilder()
+						.setCustomId('user-channel')
+						.setChannelTypes(ChannelType.GuildText)
+						.setMaxValues(1)
+						.setMinValues(1);
+
+					const staffChannelSelector = new ChannelSelectMenuBuilder()
+						.setCustomId('staff-channel')
+						.setChannelTypes(ChannelType.GuildText)
+						.setMaxValues(1)
+						.setMinValues(1);
+
+					const rows = [userChannelSelector, staffChannelSelector].map(
+						(field) =>
+							new ActionRowBuilder<ChannelSelectMenuBuilder>().addComponents(
+								field
+							)
+					);
+
+					const start = dayjs().add(30, 'seconds');
+
+					const createMessage = (
+						user_channel: string,
+						staff_channel: string
+					) => {
+						return successEmbed(
+							`Choisissez dans la liste de salons disponibles, vous avez <t:${start.unix()}:R>\n\nSalon utilisateur: <#${user_channel}>\nSalon staff: <#${staff_channel}>`
+						);
+					};
+
+					const message = await interaction.editReply({
+						embeds: [
+							createMessage(archive.user_channel, archive.staff_channel),
+						],
+						components: rows,
+					});
+
+					const collector = message.createMessageComponentCollector({
+						componentType: ComponentType.ChannelSelect,
+						time: 30_000,
+					});
+
+					collector.on('collect', async (i) => {
+						if (i.customId === 'user-channel') {
+							archive.user_channel = i.values[0];
+							await archive.save();
+
+							await i.update({
+								embeds: [createMessage(i.values[0], archive.staff_channel)],
+							});
+						} else if (i.customId === 'staff-channel') {
+							archive.staff_channel = i.values[0];
+							await archive.save();
+
+							await i.update({
+								embeds: [createMessage(archive.user_channel, i.values[0])],
+							});
+						}
+					});
+
+					collector.on('end', async (collected) => {
+						await interaction.editReply({
+							components: [],
+						});
+					});
 				}
 				break;
 		}
