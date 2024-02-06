@@ -7,6 +7,7 @@ import {
 } from 'discord.js';
 import roleSchema from '../../models/role.schema';
 import { errorEmbed, successEmbed } from '../../utils/embed';
+import userSchema from '../../models/user.schema';
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -79,6 +80,8 @@ module.exports = {
 
 		if (elevated === null || weight === null) {
 			const roleData = await roleSchema.findOneAndDelete({ _id: name });
+			await userSchema.deleteMany({ role: name });
+
 			if (!roleData) {
 				return await interaction.editReply({
 					embeds: [errorEmbed('Aucun role trouvé dans la base de données')],
