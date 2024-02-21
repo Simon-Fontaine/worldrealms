@@ -1,3 +1,7 @@
+import ticketPanelSchema from "../models/ticket-panel.schema";
+import { errorEmbed, successEmbed } from "../utils/embed";
+import { Emojis } from "../utils/emojis";
+import { cleanUsername } from "../utils/user";
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -7,10 +11,6 @@ import {
   Events,
   Interaction,
 } from "discord.js";
-import { errorEmbed, successEmbed } from "../utils/embed";
-import { Emojis } from "../utils/emojis";
-import ticketPanelSchema from "../models/ticket-panel.schema";
-import { cleanUsername } from "../utils/user";
 
 const defaultStyles: { [key: string]: number } = {
   bleu: ButtonStyle.Primary,

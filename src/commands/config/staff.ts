@@ -1,3 +1,8 @@
+import roleSchema from "../../models/role.schema";
+import userSchema from "../../models/user.schema";
+import { errorEmbed, successEmbed } from "../../utils/embed";
+import { cleanUsername } from "../../utils/user";
+import { EmbedBuilder } from "@discordjs/builders";
 import {
   SlashCommandBuilder,
   AutocompleteInteraction,
@@ -5,11 +10,6 @@ import {
   PermissionFlagsBits,
   Colors,
 } from "discord.js";
-import roleSchema from "../../models/role.schema";
-import userSchema from "../../models/user.schema";
-import { EmbedBuilder } from "@discordjs/builders";
-import { errorEmbed, successEmbed } from "../../utils/embed";
-import { cleanUsername } from "../../utils/user";
 
 const defaultRole = "Aucun rôle trouvé.";
 

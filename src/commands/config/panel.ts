@@ -1,3 +1,13 @@
+import archiveSchema from "../../models/archive.schema";
+import ticketPanelSchema from "../../models/ticket-panel.schema";
+import { successEmbed, errorEmbed } from "../../utils/embed";
+import { Emojis } from "../../utils/emojis";
+import {
+  checkExistingRoles,
+  getElevatedPermissions,
+  getGlobalPermissions,
+} from "../../utils/permissions";
+import dayjs from "dayjs";
 import {
   SlashCommandBuilder,
   PermissionFlagsBits,
@@ -15,16 +25,6 @@ import {
   EmbedBuilder,
   Colors,
 } from "discord.js";
-import { successEmbed, errorEmbed } from "../../utils/embed";
-import archiveSchema from "../../models/archive.schema";
-import ticketPanelSchema from "../../models/ticket-panel.schema";
-import dayjs from "dayjs";
-import { Emojis } from "../../utils/emojis";
-import {
-  checkExistingRoles,
-  getElevatedPermissions,
-  getGlobalPermissions,
-} from "../../utils/permissions";
 
 const defaultID = "Aucun panel trouvé.";
 

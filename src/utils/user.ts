@@ -1,7 +1,7 @@
-import { Interaction, User } from "discord.js";
 import { SchemaRole, SchemaUser } from "../models/interfaces";
-import userSchema from "../models/user.schema";
 import roleSchema from "../models/role.schema";
+import userSchema from "../models/user.schema";
+import { Interaction, User } from "discord.js";
 
 export const cleanUsername = (query: User) => {
   return query.discriminator !== "0"

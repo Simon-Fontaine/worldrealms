@@ -1,8 +1,8 @@
+import { node_env, clientId, guildId, token } from "../config.json";
+import { RubbyLogger } from "./utils/logger";
+import { REST, Routes } from "discord.js";
 import fs from "node:fs";
 import path from "node:path";
-import { REST, Routes } from "discord.js";
-import { RubbyLogger } from "./utils/logger";
-import { node_env, clientId, guildId, token } from "../config.json";
 
 const logger = RubbyLogger({
   logName: "Rubby",

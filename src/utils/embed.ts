@@ -1,6 +1,6 @@
+import { Emojis } from "./emojis";
 import { EmbedBuilder } from "@discordjs/builders";
 import { Colors } from "discord.js";
-import { Emojis } from "./emojis";
 
 export const successEmbed = (content: string | null = null) => {
   content = content ? content.slice(0, 2048) : null;

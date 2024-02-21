@@ -4,11 +4,11 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "tsc": "tsc --skipLibCheck --rootDir ./src --outDir ./dist",
     "build": "git pull && yarn tsc && pm2 restart \"Testing\" && pm2 logs \"Testing\"",
-    "start": "tsc-watch --onSuccess \"node .\"",
     "deploy": "yarn tsc && node ./dist/deploy-commands.js",
-    "format": "prettier --write \"src/**/*.ts\""
+    "format": "prettier --write \"src/**/*.ts\"",
+    "start": "tsc-watch --onSuccess \"node .\"",
+    "tsc": "tsc --skipLibCheck --rootDir ./src --outDir ./dist"
   },
   "keywords": [],
   "repository": "https://github.com/Simon-Fontaine/sc-bot.git",
@@ -22,8 +22,10 @@
     "winston": "^3.11.0"
   },
   "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "eslint": "^8.56.0",
     "prettier": "^3.2.5",
+    "prettier-plugin-package": "^1.4.0",
     "tsc-watch": "^6.0.4",
     "typescript": "^5.3.3"
   }

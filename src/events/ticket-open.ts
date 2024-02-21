@@ -1,3 +1,15 @@
+import ticketPanelSchema from "../models/ticket-panel.schema";
+import ticketSchema from "../models/ticket.schema";
+import { errorEmbed, successEmbed } from "../utils/embed";
+import { Emojis } from "../utils/emojis";
+import {
+  checkExistingRoles,
+  getElevatedMentions,
+  getElevatedPermissions,
+  getGlobalPermissions,
+  getNormalMentions,
+} from "../utils/permissions";
+import { cleanUsername, isStaff } from "../utils/user";
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -9,18 +21,6 @@ import {
   Interaction,
   OverwriteResolvable,
 } from "discord.js";
-import {
-  checkExistingRoles,
-  getElevatedMentions,
-  getElevatedPermissions,
-  getGlobalPermissions,
-  getNormalMentions,
-} from "../utils/permissions";
-import ticketSchema from "../models/ticket.schema";
-import { errorEmbed, successEmbed } from "../utils/embed";
-import ticketPanelSchema from "../models/ticket-panel.schema";
-import { cleanUsername, isStaff } from "../utils/user";
-import { Emojis } from "../utils/emojis";
 
 module.exports = {
   name: Events.InteractionCreate,

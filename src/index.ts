@@ -1,6 +1,6 @@
-import { Client, Collection, GatewayIntentBits, Partials } from "discord.js";
 import { node_env, token, mongoURI } from "../config.json";
 import { RubbyLogger } from "./utils/logger";
+import { Client, Collection, GatewayIntentBits, Partials } from "discord.js";
 import mongoose from "mongoose";
 import fs from "node:fs";
 import path from "node:path";

@@ -1,10 +1,10 @@
+import { SchemaRole } from "../models/interfaces";
+import { getElevatedRoles, getNormalRoles, getRoles } from "./user";
 import {
   Interaction,
   OverwriteResolvable,
   PermissionFlagsBits,
 } from "discord.js";
-import { SchemaRole } from "../models/interfaces";
-import { getElevatedRoles, getNormalRoles, getRoles } from "./user";
 
 export const getNormalPermissions = async (
   interaction: Interaction,

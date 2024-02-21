@@ -1,3 +1,9 @@
+import archiveSchema from "../models/archive.schema";
+import ticketSchema from "../models/ticket.schema";
+import { errorEmbed, successEmbed } from "../utils/embed";
+import { Emojis } from "../utils/emojis";
+import { cleanUsername, isStaff } from "../utils/user";
+import dayjs, { Dayjs } from "dayjs";
 import {
   ActionRowBuilder,
   AttachmentBuilder,
@@ -9,12 +15,6 @@ import {
   User,
   UserSelectMenuBuilder,
 } from "discord.js";
-import { cleanUsername, isStaff } from "../utils/user";
-import { errorEmbed, successEmbed } from "../utils/embed";
-import ticketSchema from "../models/ticket.schema";
-import dayjs, { Dayjs } from "dayjs";
-import archiveSchema from "../models/archive.schema";
-import { Emojis } from "../utils/emojis";
 
 module.exports = {
   name: Events.InteractionCreate,

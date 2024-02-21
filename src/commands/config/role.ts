@@ -1,3 +1,6 @@
+import roleSchema from "../../models/role.schema";
+import userSchema from "../../models/user.schema";
+import { errorEmbed, successEmbed } from "../../utils/embed";
 import {
   SlashCommandBuilder,
   ChatInputCommandInteraction,
@@ -5,13 +8,10 @@ import {
   Colors,
   EmbedBuilder,
 } from "discord.js";
-import roleSchema from "../../models/role.schema";
-import { errorEmbed, successEmbed } from "../../utils/embed";
-import userSchema from "../../models/user.schema";
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("staffroles")
+    .setName("role")
     .setDescription("Configure les rôles du staff.")
     .setDMPermission(false)
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
