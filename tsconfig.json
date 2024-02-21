@@ -1,15 +1,15 @@
 {
-	"compilerOptions": {
-		"typeRoots": ["src/@types", "node_modules/@types"],
-		"target": "es5",
-		"module": "commonjs",
-		"outDir": "./dist",
-		"rootDir": "./src",
-		"strict": true,
-		"resolveJsonModule": true,
-		"esModuleInterop": true,
-		"skipLibCheck": true,
-		"forceConsistentCasingInFileNames": true,
-		"lib": ["ES2021.String"]
-	}
+  "compilerOptions": {
+    "typeRoots": ["src/@types", "node_modules/@types"],
+    "target": "es5",
+    "module": "commonjs",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["ES2021.String"]
+  }
 }

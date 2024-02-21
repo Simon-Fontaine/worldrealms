@@ -1,45 +1,47 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Schema } from "mongoose";
 
 const reqString = {
-	type: String,
-	required: true,
+  type: String,
+  required: true,
 };
 
 const notReqBoolean = {
-	type: Boolean,
-	required: false,
-	default: false,
+  type: Boolean,
+  required: false,
+  default: false,
 };
 
 const schema = new Schema(
-	{
-		_id: reqString, // channel.id (ticket id)
-		type: reqString,
-		label: reqString,
+  {
+    _id: reqString, // channel.id (ticket id)
+    guild_id: reqString,
 
-		creator_id: reqString,
-		creator_username: reqString,
+    type: reqString,
+    label: reqString,
 
-		claimed_id: String,
-		claimed_username: String,
+    creator_id: reqString,
+    creator_username: reqString,
 
-		closed_id: String,
-		closed_username: String,
+    claimed_id: String,
+    claimed_username: String,
 
-		added_members: {
-			type: Array<String>,
-			required: false,
-			default: [],
-		},
+    closed_id: String,
+    closed_username: String,
 
-		locked: notReqBoolean,
-		claimed: notReqBoolean,
-		closed: notReqBoolean,
-	},
-	{
-		timestamps: true,
-	}
+    added_members: {
+      type: Array<String>,
+      required: false,
+      default: [],
+    },
+
+    locked: notReqBoolean,
+    claimed: notReqBoolean,
+    closed: notReqBoolean,
+  },
+  {
+    timestamps: true,
+  },
 );
 
-const name = 'ticket';
+const name = "ticket";
 export default mongoose.models[name] || mongoose.model(name, schema, name);

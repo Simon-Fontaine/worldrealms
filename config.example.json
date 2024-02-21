@@ -1,7 +1,7 @@
 {
-	"node_env": "production",
-	"clientId": "1197125828786540647",
-	"guildId": "1194564437202448485",
-	"token": "your-token-goes-here",
-	"mongoURI": "your-mongo-uri-goes-here"
+  "node_env": "production",
+  "clientId": "1209877691445157938",
+  "guildId": "1194564437202448485",
+  "token": "your-token-goes-here",
+  "mongoURI": "your-mongo-uri-goes-here"
 }

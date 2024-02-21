@@ -1,127 +1,139 @@
 import {
-	Interaction,
-	OverwriteResolvable,
-	PermissionFlagsBits,
-} from 'discord.js';
-import { getElevatedRoles, getNormalRoles, getRoles } from './user';
-
-export const getElevatedPermissions = async (
-	interaction: Interaction | null,
-	addUser: boolean = false
-): Promise<OverwriteResolvable[]> => {
-	const elevatedRoles = await getElevatedRoles();
-
-	const elevatedPermissions: OverwriteResolvable[] = elevatedRoles.map(
-		(role) => ({
-			id: role.role_id,
-			allow: [PermissionFlagsBits.ViewChannel],
-		})
-	);
-
-	if (interaction?.guild) {
-		elevatedPermissions.push({
-			id: interaction.guild.roles.everyone.id,
-			deny: [PermissionFlagsBits.ViewChannel],
-		});
-	}
-
-	if (addUser) {
-		elevatedPermissions.push({
-			id: interaction?.user.id!,
-			allow: [PermissionFlagsBits.ViewChannel],
-		});
-	}
-
-	return elevatedPermissions;
-};
-
-export const getElevatedMentions = async (): Promise<string[]> => {
-	const elevatedRoles = await getElevatedRoles();
-
-	return elevatedRoles.map((role) => `<@&${role.role_id}>`);
-};
+  Interaction,
+  OverwriteResolvable,
+  PermissionFlagsBits,
+} from "discord.js";
+import { SchemaRole } from "../models/interfaces";
+import { getElevatedRoles, getNormalRoles, getRoles } from "./user";
 
 export const getNormalPermissions = async (
-	interaction: Interaction | null,
-	addUser: boolean = false
+  interaction: Interaction,
+  addUser: boolean = false,
 ): Promise<OverwriteResolvable[]> => {
-	const normalRoles = await getNormalRoles();
+  if (!interaction.guild) {
+    throw new Error("Interaction guild is null");
+  }
 
-	const normalPermissions: OverwriteResolvable[] = normalRoles.map((role) => ({
-		id: role.role_id,
-		allow: [PermissionFlagsBits.ViewChannel],
-	}));
+  const roles = await getNormalRoles(interaction);
 
-	if (interaction?.guild) {
-		normalPermissions.push({
-			id: interaction.guild.roles.everyone.id,
-			deny: [PermissionFlagsBits.ViewChannel],
-		});
-	}
+  const permissions: OverwriteResolvable[] = roles.map((role: SchemaRole) => ({
+    id: role._id,
+    allow: [PermissionFlagsBits.ViewChannel],
+  }));
 
-	if (addUser) {
-		normalPermissions.push({
-			id: interaction?.user.id!,
-			allow: [PermissionFlagsBits.ViewChannel],
-		});
-	}
+  permissions.push({
+    id: interaction.guild.roles.everyone.id,
+    deny: [PermissionFlagsBits.ViewChannel],
+  });
 
-	return normalPermissions;
+  if (addUser) {
+    permissions.push({
+      id: interaction.user.id,
+      allow: [PermissionFlagsBits.ViewChannel],
+    });
+  }
+
+  return permissions;
 };
 
-export const getNormalMentions = async (): Promise<string[]> => {
-	const normalRoles = await getNormalRoles();
+export const getNormalMentions = async (
+  interaction: Interaction,
+): Promise<string[]> => {
+  const roles = await getNormalRoles(interaction);
+  return roles.map((role: SchemaRole) => `<@&${role._id}>`);
+};
 
-	return normalRoles.map((role) => `<@&${role.role_id}>`);
+export const getElevatedPermissions = async (
+  interaction: Interaction,
+  addUser: boolean = false,
+): Promise<OverwriteResolvable[]> => {
+  if (!interaction.guild) {
+    throw new Error("Interaction guild is null");
+  }
+
+  const roles = await getElevatedRoles(interaction);
+
+  const permissions: OverwriteResolvable[] = roles.map((role: SchemaRole) => ({
+    id: role._id,
+    allow: [PermissionFlagsBits.ViewChannel],
+  }));
+
+  permissions.push({
+    id: interaction.guild.roles.everyone.id,
+    deny: [PermissionFlagsBits.ViewChannel],
+  });
+
+  if (addUser) {
+    permissions.push({
+      id: interaction.user.id,
+      allow: [PermissionFlagsBits.ViewChannel],
+    });
+  }
+
+  return permissions;
+};
+
+export const getElevatedMentions = async (
+  interaction: Interaction,
+): Promise<string[]> => {
+  const roles = await getElevatedRoles(interaction);
+  return roles.map((role: SchemaRole) => `<@&${role._id}>`);
 };
 
 export const getGlobalPermissions = async (
-	interaction: Interaction | null,
-	addUser: boolean = false
+  interaction: Interaction,
+  addUser: boolean = false,
 ): Promise<OverwriteResolvable[]> => {
-	const globalRoles = await getRoles();
+  if (!interaction.guild) {
+    throw new Error("Interaction guild is null");
+  }
 
-	const globalPermissions: OverwriteResolvable[] = globalRoles.map((role) => ({
-		id: role.role_id,
-		allow: [PermissionFlagsBits.ViewChannel],
-	}));
+  const roles = await getRoles(interaction);
 
-	if (interaction?.guild) {
-		globalPermissions.push({
-			id: interaction.guild.roles.everyone.id,
-			deny: [PermissionFlagsBits.ViewChannel],
-		});
-	}
+  const permissions: OverwriteResolvable[] = roles.map((role: SchemaRole) => ({
+    id: role._id,
+    allow: [PermissionFlagsBits.ViewChannel],
+  }));
 
-	if (addUser) {
-		globalPermissions.push({
-			id: interaction?.user.id!,
-			allow: [PermissionFlagsBits.ViewChannel],
-		});
-	}
+  permissions.push({
+    id: interaction.guild.roles.everyone.id,
+    deny: [PermissionFlagsBits.ViewChannel],
+  });
 
-	return globalPermissions;
+  if (addUser) {
+    permissions.push({
+      id: interaction.user.id,
+      allow: [PermissionFlagsBits.ViewChannel],
+    });
+  }
+
+  return permissions;
 };
 
-export const getGlobalMentions = async (): Promise<string[]> => {
-	const globalRoles = await getRoles();
-
-	return globalRoles.map((role) => `<@&${role.role_id}>`);
+export const getGlobalMentions = async (
+  interaction: Interaction,
+): Promise<string[]> => {
+  const roles = await getRoles(interaction);
+  return roles.map((role: SchemaRole) => `<@&${role._id}>`);
 };
 
 export const checkExistingRoles = (
-	interaction: Interaction,
-	permissions: OverwriteResolvable[]
+  interaction: Interaction,
+  permissions: OverwriteResolvable[],
 ): OverwriteResolvable[] => {
-	for (const overwrite of permissions) {
-		if (overwrite.id === interaction.guild?.roles.everyone.id) continue;
-		if (overwrite.id === interaction.user.id) continue;
+  if (!interaction.guild) {
+    throw new Error("Interaction guild is null");
+  }
 
-		const role = interaction.guild?.roles.cache.get(overwrite.id as string);
-		if (!role) {
-			permissions.splice(permissions.indexOf(overwrite), 1);
-		}
-	}
+  for (const overwrite of permissions) {
+    if (overwrite.id === interaction.guild.roles.everyone.id) continue;
+    if (overwrite.id === interaction.user.id) continue;
 
-	return permissions;
+    const role = interaction.guild.roles.cache.get(overwrite.id as string);
+    if (!role) {
+      permissions = permissions.filter((p) => p.id !== overwrite.id);
+    }
+  }
+
+  return permissions;
 };

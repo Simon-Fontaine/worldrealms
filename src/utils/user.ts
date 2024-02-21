@@ -1,58 +1,61 @@
-import { User } from 'discord.js';
-import userSchema from '../models/user.schema';
-import roleSchema from '../models/role.schema';
-
-export interface SchemaRole {
-	_id: string;
-	role_id: string;
-	elevated: boolean;
-	weight: number;
-}
-
-export interface SchemaUser {
-	_id: string;
-	name: string;
-	avatar: string;
-	created_at: Date;
-	role: string;
-}
+import { Interaction, User } from "discord.js";
+import { SchemaRole, SchemaUser } from "../models/interfaces";
+import userSchema from "../models/user.schema";
+import roleSchema from "../models/role.schema";
 
 export const cleanUsername = (query: User) => {
-	return query.discriminator !== '0'
-		? `${query.username}#${query.discriminator}`
-		: `@${query.username}`;
+  return query.discriminator !== "0"
+    ? `${query.username}#${query.discriminator}`
+    : `@${query.username}`;
 };
 
-export const getRoles = async (): Promise<SchemaRole[]> => {
-	return await roleSchema.find();
+const getRolesByFilter = async (
+  filter: Partial<SchemaRole>,
+): Promise<SchemaRole[]> => {
+  const roles = await roleSchema.find(filter);
+  // console.log(roles);
+  return roles || [];
 };
 
-export const getNormalRoles = async (): Promise<SchemaRole[]> => {
-	return await roleSchema.find({ elevated: false });
+export const getRoles = (interaction: Interaction) =>
+  getRolesByFilter({ guild_id: interaction.guildId });
+
+export const getNormalRoles = (interaction: Interaction) =>
+  getRolesByFilter({
+    elevated: false,
+    guild_id: interaction.guildId,
+  });
+
+export const getElevatedRoles = (interaction: Interaction) =>
+  getRolesByFilter({
+    elevated: true,
+    guild_id: interaction.guildId,
+  });
+
+export const getRole = async (
+  interaction: Interaction,
+): Promise<SchemaRole | null> => {
+  const user = await userSchema.findOne({
+    _id: interaction.user.id,
+    guild_id: interaction.guildId,
+  });
+
+  if (!user) {
+    return null;
+  }
+
+  const roles = await getRoles(interaction);
+  return roles.find((r: SchemaRole) => r._id === user.role) || null;
 };
 
-export const getElevatedRoles = async (): Promise<SchemaRole[]> => {
-	return await roleSchema.find({ elevated: true });
+export const isStaff = async (interaction: Interaction): Promise<boolean> => {
+  const role = await getRole(interaction);
+  return role !== null;
 };
 
-export const getRole = async (query: User): Promise<SchemaRole | null> => {
-	const user = await userSchema.findById(query.id);
-	const roles = await roleSchema.find();
-
-	if (!user) {
-		return null;
-	}
-
-	const role = roles.find((r) => r._id === user.role);
-	return role || null;
-};
-
-export const isStaff = async (query: User): Promise<boolean> => {
-	const role = await getRole(query);
-	return role !== null;
-};
-
-export const isHighStaff = async (query: User): Promise<boolean> => {
-	const role = await getRole(query);
-	return role !== null && role.elevated;
+export const isHighStaff = async (
+  interaction: Interaction,
+): Promise<boolean> => {
+  const role = await getRole(interaction);
+  return role !== null && role.elevated;
 };

@@ -1,27 +1,28 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Schema } from "mongoose";
 
 const reqString = {
-	type: String,
-	required: true,
+  type: String,
+  required: true,
 };
 
 const schema = new Schema({
-	_id: reqString, // user.id
+  _id: reqString, // user.id
+  guild_id: reqString,
 
-	name: reqString,
-	avatar: {
-		type: String,
-		required: false,
-		default: `https://cdn.discordapp.com/embed/avatars/${Math.floor(
-			Math.random() * 5
-		)}.png`,
-	},
-	created_at: {
-		type: Date,
-		required: true,
-	},
-	role: reqString,
+  name: reqString,
+  avatar: {
+    type: String,
+    required: false,
+    default: `https://cdn.discordapp.com/embed/avatars/${Math.floor(
+      Math.random() * 5,
+    )}.png`,
+  },
+  created_at: {
+    type: Date,
+    required: true,
+  },
+  role: reqString,
 });
 
-const name = 'user';
+const name = "user";
 export default mongoose.models[name] || mongoose.model(name, schema, name);
