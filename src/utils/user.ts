@@ -1,6 +1,6 @@
-import { SchemaRole, SchemaUser } from "../models/interfaces";
 import roleSchema from "../models/role.schema";
 import userSchema from "../models/user.schema";
+import { SchemaRole, SchemaUser } from "../types";
 import { Interaction, User } from "discord.js";
 
 export const cleanUsername = (query: User) => {

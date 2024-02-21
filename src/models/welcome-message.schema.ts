@@ -17,14 +17,18 @@ const schema = new Schema({
   channel_ids: optArray,
   role_ids: optArray,
 
+  ping_user: {
+    type: Boolean,
+    default: true,
+  },
   message: {
     type: String,
     default:
       "Bienvenue sur **{server.name}** {user.mention} nous sommes maintenant `{server.member_count}` membres!",
   },
   hex_color: {
-    type: String,
-    default: Colors.Green,
+    type: Number || null,
+    default: Colors.Default,
   },
 });
 

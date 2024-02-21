@@ -1,4 +1,4 @@
-import { SchemaRole } from "../models/interfaces";
+import { SchemaRole } from "../types";
 import { getElevatedRoles, getNormalRoles, getRoles } from "./user";
 import {
   Interaction,

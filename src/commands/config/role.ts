@@ -2,11 +2,11 @@ import roleSchema from "../../models/role.schema";
 import userSchema from "../../models/user.schema";
 import { errorEmbed, successEmbed } from "../../utils/embed";
 import {
-  SlashCommandBuilder,
   ChatInputCommandInteraction,
-  PermissionFlagsBits,
   Colors,
   EmbedBuilder,
+  PermissionFlagsBits,
+  SlashCommandBuilder,
 } from "discord.js";
 
 module.exports = {

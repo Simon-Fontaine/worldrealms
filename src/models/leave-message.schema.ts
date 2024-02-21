@@ -22,8 +22,8 @@ const schema = new Schema({
       "{user.idname} à quitté **{server.name}** nous sommes maintenant `{server.member_count}` membres...",
   },
   hex_color: {
-    type: String,
-    default: Colors.Red,
+    type: Number || null,
+    default: Colors.Default,
   },
 });
 

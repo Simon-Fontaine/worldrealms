@@ -1,6 +1,6 @@
 import archiveSchema from "../../models/archive.schema";
 import ticketPanelSchema from "../../models/ticket-panel.schema";
-import { successEmbed, errorEmbed } from "../../utils/embed";
+import { errorEmbed, successEmbed } from "../../utils/embed";
 import { Emojis } from "../../utils/emojis";
 import {
   checkExistingRoles,
@@ -9,21 +9,21 @@ import {
 } from "../../utils/permissions";
 import dayjs from "dayjs";
 import {
-  SlashCommandBuilder,
-  PermissionFlagsBits,
-  ChatInputCommandInteraction,
-  ModalBuilder,
-  TextInputBuilder,
-  TextInputStyle,
   ActionRowBuilder,
   AutocompleteInteraction,
-  TextChannel,
   ChannelSelectMenuBuilder,
   ChannelSelectMenuInteraction,
-  ComponentType,
   ChannelType,
-  EmbedBuilder,
+  ChatInputCommandInteraction,
   Colors,
+  ComponentType,
+  EmbedBuilder,
+  ModalBuilder,
+  PermissionFlagsBits,
+  SlashCommandBuilder,
+  TextChannel,
+  TextInputBuilder,
+  TextInputStyle,
 } from "discord.js";
 
 const defaultID = "Aucun panel trouvé.";

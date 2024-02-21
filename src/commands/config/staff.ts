@@ -4,11 +4,11 @@ import { errorEmbed, successEmbed } from "../../utils/embed";
 import { cleanUsername } from "../../utils/user";
 import { EmbedBuilder } from "@discordjs/builders";
 import {
-  SlashCommandBuilder,
   AutocompleteInteraction,
   ChatInputCommandInteraction,
-  PermissionFlagsBits,
   Colors,
+  PermissionFlagsBits,
+  SlashCommandBuilder,
 } from "discord.js";
 
 const defaultRole = "Aucun rôle trouvé.";

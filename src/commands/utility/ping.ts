@@ -1,8 +1,8 @@
 import {
-  SlashCommandBuilder,
   ChatInputCommandInteraction,
-  EmbedBuilder,
   Colors,
+  EmbedBuilder,
+  SlashCommandBuilder,
 } from "discord.js";
 
 module.exports = {

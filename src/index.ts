@@ -1,4 +1,4 @@
-import { node_env, token, mongoURI } from "../config.json";
+import { mongoURI, node_env, token } from "../config.json";
 import { RubbyLogger } from "./utils/logger";
 import { Client, Collection, GatewayIntentBits, Partials } from "discord.js";
 import mongoose from "mongoose";

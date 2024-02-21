@@ -1,4 +1,4 @@
-import { node_env, clientId, guildId, token } from "../config.json";
+import { clientId, guildId, node_env, token } from "../config.json";
 import { RubbyLogger } from "./utils/logger";
 import { REST, Routes } from "discord.js";
 import fs from "node:fs";
