@@ -19,12 +19,8 @@ import {
 module.exports = {
   name: Events.InteractionCreate,
   async execute(interaction: Interaction) {
-    if (
-      (!interaction.isButton() && !interaction.isUserSelectMenu()) ||
-      !interaction.channel ||
-      !interaction.guild
-    )
-      return;
+    if (!interaction.isButton() && !interaction.isUserSelectMenu()) return;
+    if (!interaction.channel || !interaction.guild) return;
 
     const [type, id] = interaction.customId.split("-");
     const types = ["ticketClose", "ticketLock", "ticketAddUser", "ticketClaim"];

@@ -2,7 +2,17 @@ import { SchemaWelcomeMessage } from "../types";
 import { Emojis } from "./emojis";
 import { replaceVariables } from "./variable";
 import { EmbedBuilder } from "@discordjs/builders";
-import { codeBlock, Colors, Interaction, RGBTuple } from "discord.js";
+import {
+  ChatInputCommandInteraction,
+  codeBlock,
+  Colors,
+  Guild,
+  MessageComponentInteraction,
+  ModalSubmitInteraction,
+  resolveColor,
+  RGBTuple,
+  User,
+} from "discord.js";
 
 export const successEmbed = (content: string | null = null) => {
   content = content ? content.slice(0, 2048) : null;
@@ -31,15 +41,16 @@ export const errorEmbed = (content: string | null = null) => {
 };
 
 export const welcomeEmbed = (
-  color: number | RGBTuple | null,
+  color: RGBTuple,
   content: string,
-  interaction: Interaction,
+  server: Guild,
+  user: User,
 ) => {
   content = content.slice(0, 2048);
 
   return new EmbedBuilder()
-    .setColor(color)
-    .setDescription(replaceVariables(content, interaction));
+    .setColor(resolveColor(color))
+    .setDescription(replaceVariables(content, server, user));
 };
 
 export const welcomeOptionsEmbed = (welcomeConfig: SchemaWelcomeMessage) => {
@@ -52,37 +63,22 @@ export const welcomeOptionsEmbed = (welcomeConfig: SchemaWelcomeMessage) => {
 
   return new EmbedBuilder().setColor(Colors.Blurple).setFields([
     {
-      name: "Salons",
+      name: `${Emojis.wave} Salons de Bienvenue`,
       value: channelMentions || "Aucun",
       inline: true,
     },
     {
-      name: "Roles",
+      name: `${Emojis.link} Roles ajoutés`,
       value: roleMentions || "Aucun",
       inline: true,
     },
     {
-      name: "\u200B",
-      value: "\u200B",
+      name: `${welcomeConfig.ping_user ? Emojis.check_mark_green : Emojis.x_red} Mention`,
+      value: welcomeConfig.ping_user ? `Oui` : `Non`,
       inline: true,
     },
     {
-      name: "Mention",
-      value: welcomeConfig.ping_user ? "Oui" : "Non",
-      inline: true,
-    },
-    {
-      name: "Couleur",
-      value: `${welcomeConfig.hex_color}`,
-      inline: true,
-    },
-    {
-      name: "\u200B",
-      value: "\u200B",
-      inline: true,
-    },
-    {
-      name: "Message",
+      name: `${Emojis.speechmessage} Message Brut`,
       value: codeBlock("md", welcomeConfig.message),
       inline: false,
     },

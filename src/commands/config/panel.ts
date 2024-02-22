@@ -110,7 +110,7 @@ module.exports = {
             new ActionRowBuilder<TextInputBuilder>().addComponents(field),
           );
 
-          modal.addComponents(rows[0], rows[1], rows[2]);
+          modal.addComponents(...rows);
 
           await interaction.showModal(modal);
         }

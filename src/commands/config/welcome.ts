@@ -9,6 +9,7 @@ import {
   ChannelType,
   ChatInputCommandInteraction,
   PermissionFlagsBits,
+  resolveColor,
   RoleSelectMenuBuilder,
   SlashCommandBuilder,
 } from "discord.js";
@@ -21,7 +22,7 @@ module.exports = {
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply();
 
     const welcomeConfig: SchemaWelcomeMessage =
       await welcomeMessageSchema.findOneAndUpdate(
@@ -39,31 +40,27 @@ module.exports = {
 
     const firstActionRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder()
-        .setCustomId("welcomeMessageEdit")
+        .setCustomId(`welcomeMessageEdit-${interaction.user.id}`)
         .setLabel("Modifier")
         .setStyle(ButtonStyle.Primary),
       new ButtonBuilder()
-        .setCustomId("welcomeMessageUserPing")
-        .setLabel("Ping")
+        .setCustomId(`welcomeMessageUserPing-${interaction.user.id}`)
+        .setLabel("Mention Utilisateur")
         .setStyle(ButtonStyle.Primary),
       new ButtonBuilder()
-        .setCustomId("welcomeMessageVariables")
+        .setCustomId(`welcomeMessageVariables-${interaction.user.id}`)
         .setLabel("Variables")
         .setStyle(ButtonStyle.Secondary),
     );
 
     const secondActionRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder()
-        .setCustomId("welcomeMessageConfirm")
-        .setLabel("Confirmer")
+        .setCustomId(`welcomeMessageClose-${interaction.user.id}`)
+        .setLabel("Fermer")
         .setStyle(ButtonStyle.Success),
       new ButtonBuilder()
-        .setCustomId("welcomeMessageCancel")
-        .setLabel("Annuler")
-        .setStyle(ButtonStyle.Danger),
-      new ButtonBuilder()
-        .setCustomId("welcomeMessageReset")
-        .setLabel("Reset")
+        .setCustomId(`welcomeMessageReset-${interaction.user.id}`)
+        .setLabel("Réinitialiser")
         .setStyle(ButtonStyle.Danger),
     );
 
@@ -71,7 +68,7 @@ module.exports = {
       new ActionRowBuilder<ChannelSelectMenuBuilder>().addComponents(
         new ChannelSelectMenuBuilder()
           .setChannelTypes(ChannelType.GuildText)
-          .setCustomId("welcomeMessageChannelSelect")
+          .setCustomId(`welcomeMessageChannelSelect-${interaction.user.id}`)
           .setPlaceholder("Ajouter ou supprimer des salons de bienvenue")
           .setMinValues(0)
           .setMaxValues(6),
@@ -80,7 +77,7 @@ module.exports = {
     const forthActionRow =
       new ActionRowBuilder<RoleSelectMenuBuilder>().addComponents(
         new RoleSelectMenuBuilder()
-          .setCustomId("welcomeMessageRoleSelect")
+          .setCustomId(`welcomeMessageRoleSelect-${interaction.user.id}`)
           .setPlaceholder("Ajouter ou supprimer des rôles de bienvenue")
           .setMinValues(0)
           .setMaxValues(6),
@@ -92,7 +89,8 @@ module.exports = {
         welcomeEmbed(
           welcomeConfig.hex_color,
           welcomeConfig.message,
-          interaction,
+          interaction.guild!,
+          interaction.user,
         ),
         welcomeOptionsEmbed(welcomeConfig),
       ],

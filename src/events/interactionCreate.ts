@@ -41,17 +41,17 @@ module.exports = {
       setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
 
       try {
-        await command.execute(interaction);
+        return await command.execute(interaction);
       } catch (error) {
         console.error(error);
         if (interaction.replied || interaction.deferred) {
-          await interaction.followUp({
+          return await interaction.followUp({
             content:
               "Une erreur s'est produite lors de l'exécution de cette commande !",
             ephemeral: true,
           });
         } else {
-          await interaction.reply({
+          return await interaction.reply({
             content:
               "Une erreur s'est produite lors de l'exécution de cette commande !",
             ephemeral: true,
@@ -69,7 +69,7 @@ module.exports = {
       }
 
       try {
-        await command.autocomplete(interaction);
+        return await command.autocomplete(interaction);
       } catch (error) {
         console.error(error);
       }

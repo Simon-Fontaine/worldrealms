@@ -1,5 +1,11 @@
 import { cleanUsername } from "./user";
-import { Interaction } from "discord.js";
+import {
+  ChatInputCommandInteraction,
+  Guild,
+  MessageComponentInteraction,
+  ModalSubmitInteraction,
+  User,
+} from "discord.js";
 
 export const getVariable = () => {
   return [
@@ -25,11 +31,11 @@ export const getVariable = () => {
   ];
 };
 
-export const replaceVariables = (content: string, interaction: Interaction) => {
-  if (!interaction.guild) return content;
-
-  const server = interaction.guild;
-  const user = interaction.user;
+export const replaceVariables = (
+  content: string,
+  server: Guild,
+  user: User,
+) => {
   const owner = server.members.cache.get(server.ownerId);
 
   const variables = {

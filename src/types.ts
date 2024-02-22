@@ -19,16 +19,16 @@ export type SchemaUser = {
 
 export type SchemaWelcomeMessage = {
   _id: string;
-  channel_ids: [string];
-  role_ids: [string];
+  channel_ids: string[];
+  role_ids: string[];
   ping_user: boolean;
   message: string;
-  hex_color: number | RGBTuple | null;
+  hex_color: RGBTuple;
 };
 
 export type SchemaLeaveMessage = {
   _id: string;
-  channel_ids: [string];
+  channel_ids: string[];
   message: string;
-  hex_color: number | RGBTuple | null;
+  hex_color: RGBTuple;
 };

@@ -1,4 +1,3 @@
-import { Colors } from "discord.js";
 import mongoose, { Schema } from "mongoose";
 
 const reqString = {
@@ -19,16 +18,15 @@ const schema = new Schema({
 
   ping_user: {
     type: Boolean,
-    default: true,
+    default: false,
   },
   message: {
     type: String,
-    default:
-      "Bienvenue sur **{server.name}** {user.mention} nous sommes maintenant `{server.member_count}` membres!",
+    default: "Bienvenue sur **{server}**, {user.mention} !",
   },
   hex_color: {
-    type: Number || null,
-    default: Colors.Default,
+    type: [Number, Number, Number],
+    default: [87, 242, 135],
   },
 });
 
