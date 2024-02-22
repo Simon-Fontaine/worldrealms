@@ -1,22 +1,16 @@
 import archiveSchema from "../../models/archive.schema";
 import ticketPanelSchema from "../../models/ticket-panel.schema";
-import { errorEmbed, successEmbed } from "../../utils/embed";
+import { archiveEmbed, errorEmbed, successEmbed } from "../../utils/embed";
 import { Emojis } from "../../utils/emojis";
-import {
-  checkExistingRoles,
-  getElevatedPermissions,
-  getGlobalPermissions,
-} from "../../utils/permissions";
-import dayjs from "dayjs";
 import {
   ActionRowBuilder,
   AutocompleteInteraction,
+  ButtonBuilder,
+  ButtonStyle,
   ChannelSelectMenuBuilder,
-  ChannelSelectMenuInteraction,
   ChannelType,
   ChatInputCommandInteraction,
   Colors,
-  ComponentType,
   EmbedBuilder,
   ModalBuilder,
   PermissionFlagsBits,
@@ -183,7 +177,7 @@ module.exports = {
         break;
       case "archive":
         {
-          await interaction.deferReply({ ephemeral: true });
+          await interaction.deferReply({});
 
           const archive = await archiveSchema.findOneAndUpdate(
             { _id: interaction.guildId },
@@ -191,118 +185,43 @@ module.exports = {
             { upsert: true, new: true },
           );
 
-          let user_channel = archive.user_channel;
-          let staff_channel = archive.staff_channel;
-
-          const globalPermissions = await getGlobalPermissions(interaction);
-          const existingGlobalPermissions = checkExistingRoles(
-            interaction,
-            globalPermissions,
-          );
-          const elevatedPermissions = await getElevatedPermissions(interaction);
-          const existingElevatedPermissions = checkExistingRoles(
-            interaction,
-            elevatedPermissions,
-          );
-
-          const createChannelSelector = (customId: string) => {
-            return new ChannelSelectMenuBuilder()
-              .setCustomId(customId)
-              .setChannelTypes(ChannelType.GuildText)
-              .setMaxValues(1)
-              .setMinValues(0);
-          };
-
-          const userChannelSelector = createChannelSelector("user-channel");
-          const staffChannelSelector = createChannelSelector("staff-channel");
-
-          const rows = [userChannelSelector, staffChannelSelector].map(
-            (field) =>
-              new ActionRowBuilder<ChannelSelectMenuBuilder>().addComponents(
-                field,
-              ),
-          );
-
-          const start = dayjs().add(15, "seconds");
-
-          const buildEmbed = () => {
-            return new EmbedBuilder()
-              .setColor(Colors.Blurple)
-              .setDescription(
-                [
-                  `Choisissez dans la liste de salons disponibles, vous avez <t:${start.unix()}:R>`,
-                  "",
-                  `${Emojis.blue_hexagon} Salon utilisateur: <#${user_channel}>`,
-                  `${Emojis.blue_hexagon} Salon staff: <#${staff_channel}>`,
-                ].join("\n"),
-              );
-          };
-
-          const message = await interaction.editReply({
-            embeds: [buildEmbed()],
-            components: rows,
-          });
-
-          const updateEmbed = (isUserChannel: boolean) => {
-            return buildEmbed().setDescription(
-              [
-                `Choisissez dans la liste de salons disponibles, vous avez <t:${start.unix()}:R>`,
-                "",
-                `${
-                  isUserChannel ? Emojis.check_mark_green : Emojis.blue_hexagon
-                } Salon utilisateur: <#${user_channel}>`,
-                `${
-                  isUserChannel ? Emojis.blue_hexagon : Emojis.check_mark_green
-                } Salon staff: <#${staff_channel}>`,
-              ].join("\n"),
+          const firstActionRow =
+            new ActionRowBuilder<ButtonBuilder>().addComponents(
+              new ButtonBuilder()
+                .setCustomId(`panelArchivePermission-${interaction.user.id}`)
+                .setLabel("Applique les permissions")
+                .setStyle(ButtonStyle.Primary),
+              new ButtonBuilder()
+                .setCustomId(`panelArchiveEdit-${interaction.user.id}`)
+                .setLabel("Fermer")
+                .setStyle(ButtonStyle.Success),
+              new ButtonBuilder()
+                .setCustomId(`panelArchiveReset-${interaction.user.id}`)
+                .setLabel("Réinitialiser")
+                .setStyle(ButtonStyle.Danger),
             );
-          };
 
-          const updateDatabaseAndMessage = async (
-            i: ChannelSelectMenuInteraction,
-            isUserChannel: boolean,
-          ) => {
-            await Promise.all([
-              archiveSchema.updateOne(
-                { _id: interaction.guildId },
-                {
-                  [isUserChannel ? "user_channel" : "staff_channel"]:
-                    i.values[0] === undefined ? null : i.values[0],
-                },
-              ),
-              i.update({ embeds: [updateEmbed(isUserChannel)] }),
-            ]);
-          };
+          const secondActionRow =
+            new ActionRowBuilder<ChannelSelectMenuBuilder>().addComponents(
+              new ChannelSelectMenuBuilder()
+                .setCustomId(`panelArchiveUser-${interaction.user.id}`)
+                .setChannelTypes(ChannelType.GuildText)
+                .setMaxValues(1)
+                .setMinValues(0),
+            );
 
-          const collector = message.createMessageComponentCollector({
-            componentType: ComponentType.ChannelSelect,
-            time: 15_000,
-          });
+          const thirdActionRow =
+            new ActionRowBuilder<ChannelSelectMenuBuilder>().addComponents(
+              new ChannelSelectMenuBuilder()
+                .setCustomId(`panelArchiveStaff-${interaction.user.id}`)
+                .setChannelTypes(ChannelType.GuildText)
+                .setMaxValues(1)
+                .setMinValues(0),
+            );
 
-          collector.on("collect", async (i) => {
-            const newValues = i.values[0] === undefined ? null : i.values[0];
-
-            if (i.customId === "user-channel") {
-              user_channel = newValues;
-              await updateDatabaseAndMessage(i, true);
-            } else if (i.customId === "staff-channel") {
-              staff_channel = newValues;
-              await updateDatabaseAndMessage(i, false);
-            }
-          });
-
-          collector.on("end", async () => {
-            await interaction.guild?.channels.cache.get(user_channel)?.edit({
-              permissionOverwrites: existingGlobalPermissions,
-            });
-
-            await interaction.guild?.channels.cache.get(staff_channel)?.edit({
-              permissionOverwrites: existingElevatedPermissions,
-            });
-
-            await interaction.editReply({
-              components: [],
-            });
+          await interaction.editReply({
+            embeds: [archiveEmbed(archive)],
+            components: [firstActionRow, secondActionRow, thirdActionRow],
           });
         }
         break;

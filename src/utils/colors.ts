@@ -1,11 +1,18 @@
-import color from "color";
+export function toCamelCase(str: string): string {
+  return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, (match, index) => {
+    if (+match === 0) return "";
+    return index == 0 ? match.toLowerCase() : match.toUpperCase();
+  });
+}
 
-export function colorNameOrHexToRGB(
-  colorString: string,
-): [number, number, number] {
-  const colorInstance = color(colorString);
+export function hexToDecimal(hex: string): number {
+  return parseInt(hex.replace(/^#/, ""), 16);
+}
 
-  const rgbArray = colorInstance.rgb();
+export function decimalToHex(decimal: number): string {
+  return `#${decimal.toString(16)}`;
+}
 
-  return [rgbArray.red(), rgbArray.green(), rgbArray.blue()];
+export function checkHex(hex: string): boolean {
+  return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(hex);
 }

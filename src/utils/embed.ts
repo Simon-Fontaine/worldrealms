@@ -1,16 +1,13 @@
-import { SchemaWelcomeMessage } from "../types";
+import { SchemaArchive, SchemaWelcomeMessage } from "../types";
 import { Emojis } from "./emojis";
 import { replaceVariables } from "./variable";
 import { EmbedBuilder } from "@discordjs/builders";
 import {
-  ChatInputCommandInteraction,
   codeBlock,
+  ColorResolvable,
   Colors,
   Guild,
-  MessageComponentInteraction,
-  ModalSubmitInteraction,
   resolveColor,
-  RGBTuple,
   User,
 } from "discord.js";
 
@@ -40,8 +37,23 @@ export const errorEmbed = (content: string | null = null) => {
     .setDescription(content);
 };
 
+export const archiveEmbed = (config: SchemaArchive) => {
+  return new EmbedBuilder().setColor(Colors.Blurple).setFields([
+    {
+      name: `${Emojis.search} Salon utilisateur`,
+      value: `<#${config.user_channel}>`,
+      inline: true,
+    },
+    {
+      name: `${Emojis.lock} Salon Staff`,
+      value: `<#${config.staff_channel}>`,
+      inline: true,
+    },
+  ]);
+};
+
 export const welcomeEmbed = (
-  color: RGBTuple,
+  color: number,
   content: string,
   server: Guild,
   user: User,
@@ -49,7 +61,7 @@ export const welcomeEmbed = (
   content = content.slice(0, 2048);
 
   return new EmbedBuilder()
-    .setColor(resolveColor(color))
+    .setColor(color)
     .setDescription(replaceVariables(content, server, user));
 };
 

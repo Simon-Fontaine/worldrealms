@@ -1,3 +1,4 @@
+import { Colors } from "discord.js";
 import mongoose, { Schema } from "mongoose";
 
 const reqString = {
@@ -21,8 +22,8 @@ const schema = new Schema({
       "{user.idname} à quitté **{server.name}** nous sommes maintenant `{server.member_count}` membres...",
   },
   hex_color: {
-    type: [Number, Number, Number],
-    default: [237, 66, 69],
+    type: Number,
+    default: Colors.Red,
   },
 });
 
