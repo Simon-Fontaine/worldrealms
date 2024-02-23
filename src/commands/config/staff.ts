@@ -75,7 +75,7 @@ module.exports = {
 
           return roleB.weight - roleA.weight;
         })
-        .map((member) => `- <@${member._id}> : <@&${member.role}>`)
+        .map((member) => `- <@${member.user_id}> : <@&${member.role}>`)
         .join("\n");
 
       const embed = new EmbedBuilder()
@@ -100,7 +100,7 @@ module.exports = {
 
     if (!role) {
       const memberData = await userSchema.findOneAndDelete({
-        _id: user.id,
+        user_id: user.id,
         guild_id: interaction.guildId,
       });
       if (!memberData) {
@@ -129,11 +129,11 @@ module.exports = {
 
     await userSchema.findOneAndUpdate(
       {
-        _id: user.id,
+        user_id: user.id,
         guild_id: interaction.guildId,
       },
       {
-        _id: user.id,
+        user_id: user.id,
         guild_id: interaction.guildId,
         avatar:
           user.avatarURL({

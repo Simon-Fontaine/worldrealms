@@ -36,7 +36,7 @@ export const getRole = async (
   interaction: Interaction,
 ): Promise<SchemaRole | null> => {
   const user = await userSchema.findOne({
-    _id: interaction.user.id,
+    user_id: interaction.user.id,
     guild_id: interaction.guildId,
   });
 

@@ -15,6 +15,7 @@ export type SchemaRole = {
 
 export type SchemaUser = {
   _id: string;
+  user_id: string;
   guild_id: string | null;
   name: string;
   avatar: string;
