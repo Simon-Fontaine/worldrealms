@@ -1,7 +1,6 @@
 import archiveSchema from "../../models/archive.schema";
 import ticketPanelSchema from "../../models/ticket-panel.schema";
 import { archiveEmbed, errorEmbed, successEmbed } from "../../utils/embed";
-import { Emojis } from "../../utils/emojis";
 import {
   ActionRowBuilder,
   AutocompleteInteraction,
@@ -10,8 +9,6 @@ import {
   ChannelSelectMenuBuilder,
   ChannelType,
   ChatInputCommandInteraction,
-  Colors,
-  EmbedBuilder,
   ModalBuilder,
   PermissionFlagsBits,
   SlashCommandBuilder,
@@ -27,7 +24,7 @@ module.exports = {
     .setName("panel")
     .setDescription("Configure les panels de tickets.")
     .setDMPermission(false)
-    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
     .addSubcommand((subcommand) =>
       subcommand.setName("create").setDescription("Crée un panel de ticket."),
     )
@@ -192,7 +189,7 @@ module.exports = {
                 .setLabel("Applique les permissions")
                 .setStyle(ButtonStyle.Primary),
               new ButtonBuilder()
-                .setCustomId(`panelArchiveEdit-${interaction.user.id}`)
+                .setCustomId(`panelArchiveClose-${interaction.user.id}`)
                 .setLabel("Fermer")
                 .setStyle(ButtonStyle.Success),
               new ButtonBuilder()

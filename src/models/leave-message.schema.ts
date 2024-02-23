@@ -19,7 +19,7 @@ const schema = new Schema({
   message: {
     type: String,
     default:
-      "{user.idname} à quitté **{server.name}** nous sommes maintenant `{server.member_count}` membres...",
+      "**{user.idname}** nous à quitté, nous sommes maintenant `{server.member_count}` membres.",
   },
   hex_color: {
     type: Number,

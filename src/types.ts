@@ -1,3 +1,10 @@
+export type TimeObject = {
+  date: Date;
+  small: string;
+  normal: string;
+  full: string;
+};
+
 export type SchemaRole = {
   _id: string;
   guild_id: string | null;

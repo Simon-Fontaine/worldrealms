@@ -1,7 +1,17 @@
 import archiveSchema from "../models/archive.schema";
 import { SchemaArchive } from "../types";
-import { archiveEmbed, errorEmbed } from "../utils/embed";
-import { Events, Interaction, MessageComponentInteraction } from "discord.js";
+import { archiveEmbed, errorEmbed, successEmbed } from "../utils/embed";
+import {
+  checkExistingRoles,
+  getElevatedPermissions,
+  getGlobalPermissions,
+} from "../utils/permissions";
+import {
+  Events,
+  Interaction,
+  MessageComponentInteraction,
+  TextChannel,
+} from "discord.js";
 
 const editArchiveConfig = async (
   interaction: Interaction,
@@ -31,8 +41,9 @@ const editArchiveMessage = async (
       embeds: [archiveEmbed(archiveConfig)],
     });
   } catch (error) {
-    await interaction.editReply({
+    await interaction.followUp({
       embeds: [errorEmbed("Une erreur est survenue lors de la mise à jour.")],
+      ephemeral: true,
     });
   }
 };
@@ -46,7 +57,7 @@ module.exports = {
     const [type, userId] = interaction.customId.split("-");
     const types = [
       "panelArchivePermission",
-      "panelArchiveEdit",
+      "panelArchiveClose",
       "panelArchiveReset",
       "panelArchiveUser",
       "panelArchiveStaff",
@@ -63,7 +74,85 @@ module.exports = {
       });
     }
 
+    await interaction.deferUpdate();
+    const archiveConfig = await editArchiveConfig(interaction, {});
+
     switch (type) {
+      case "panelArchivePermission":
+        if (!interaction.isButton()) return;
+        if (!archiveConfig.staff_channel && !archiveConfig.user_channel) {
+          return interaction.followUp({
+            embeds: [errorEmbed("Veuillez configurer les salons.")],
+            ephemeral: true,
+          });
+        }
+
+        const staffChannel = interaction.guild.channels.cache.get(
+          archiveConfig.staff_channel,
+        ) as TextChannel | undefined;
+        const userChannel = interaction.guild.channels.cache.get(
+          archiveConfig.user_channel,
+        ) as TextChannel | undefined;
+
+        if (!staffChannel && !userChannel) {
+          return interaction.followUp({
+            embeds: [errorEmbed("Un de vos salons configurés n'existent pas.")],
+            ephemeral: true,
+          });
+        }
+
+        if (staffChannel) {
+          const elevatedPermissions = checkExistingRoles(
+            interaction,
+            await getElevatedPermissions(interaction),
+          );
+
+          await staffChannel.edit({
+            permissionOverwrites: elevatedPermissions,
+          });
+        }
+        if (userChannel) {
+          const globalPermissions = checkExistingRoles(
+            interaction,
+            await getGlobalPermissions(interaction),
+          );
+
+          await userChannel.edit({
+            permissionOverwrites: globalPermissions,
+          });
+        }
+
+        await interaction.followUp({
+          embeds: [successEmbed("Les permissions ont été mises à jour.")],
+          ephemeral: true,
+        });
+        break;
+      case "panelArchiveClose":
+        if (!interaction.isButton()) return;
+        await interaction.message?.delete().catch(() => null);
+        break;
+      case "panelArchiveReset":
+        if (!interaction.isButton()) return;
+        archiveConfig.staff_channel = "undefined";
+        archiveConfig.user_channel = "undefined";
+
+        await editArchiveConfig(interaction, archiveConfig);
+        await editArchiveMessage(interaction, archiveConfig);
+        break;
+      case "panelArchiveUser":
+        if (!interaction.isChannelSelectMenu()) return;
+        archiveConfig.user_channel = interaction.values[0];
+
+        await editArchiveConfig(interaction, archiveConfig);
+        await editArchiveMessage(interaction, archiveConfig);
+        break;
+      case "panelArchiveStaff":
+        if (!interaction.isChannelSelectMenu()) return;
+        archiveConfig.staff_channel = interaction.values[0];
+
+        await editArchiveConfig(interaction, archiveConfig);
+        await editArchiveMessage(interaction, archiveConfig);
+        break;
     }
   },
 };

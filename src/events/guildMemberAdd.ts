@@ -1,5 +1,5 @@
 import welcomeMessageSchema from "../models/welcome-message.schema";
-import { welcomeEmbed } from "../utils/embed";
+import { variableEmbed } from "../utils/embed";
 import { Events, GuildMember, GuildTextBasedChannel } from "discord.js";
 
 module.exports = {
@@ -22,7 +22,7 @@ module.exports = {
         .send({
           content: welcomeConfig.ping_user ? member.toString() : undefined,
           embeds: [
-            welcomeEmbed(
+            variableEmbed(
               welcomeConfig.hex_color,
               welcomeConfig.message,
               member.guild,

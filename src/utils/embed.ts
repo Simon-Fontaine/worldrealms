@@ -1,15 +1,12 @@
-import { SchemaArchive, SchemaWelcomeMessage } from "../types";
+import {
+  SchemaArchive,
+  SchemaLeaveMessage,
+  SchemaWelcomeMessage,
+} from "../types";
 import { Emojis } from "./emojis";
 import { replaceVariables } from "./variable";
 import { EmbedBuilder } from "@discordjs/builders";
-import {
-  codeBlock,
-  ColorResolvable,
-  Colors,
-  Guild,
-  resolveColor,
-  User,
-} from "discord.js";
+import { codeBlock, Colors, Guild, User } from "discord.js";
 
 export const successEmbed = (content: string | null = null) => {
   content = content ? content.slice(0, 2048) : null;
@@ -52,7 +49,7 @@ export const archiveEmbed = (config: SchemaArchive) => {
   ]);
 };
 
-export const welcomeEmbed = (
+export const variableEmbed = (
   color: number,
   content: string,
   server: Guild,
@@ -63,6 +60,25 @@ export const welcomeEmbed = (
   return new EmbedBuilder()
     .setColor(color)
     .setDescription(replaceVariables(content, server, user));
+};
+
+export const leaveOptionsEmbed = (leaveConfig: SchemaLeaveMessage) => {
+  const channelMentions = leaveConfig.channel_ids
+    .map((id) => `<#${id}>`)
+    .join(", ");
+
+  return new EmbedBuilder().setColor(Colors.Blurple).setFields([
+    {
+      name: `${Emojis.wave} Salons de Départ`,
+      value: channelMentions || "Aucun",
+      inline: true,
+    },
+    {
+      name: `${Emojis.speechmessage} Message Brut`,
+      value: codeBlock("md", leaveConfig.message),
+      inline: false,
+    },
+  ]);
 };
 
 export const welcomeOptionsEmbed = (welcomeConfig: SchemaWelcomeMessage) => {

@@ -1,11 +1,11 @@
-import welcomeMessageSchema from "../models/welcome-message.schema";
-import { SchemaWelcomeMessage } from "../types";
+import leaveMessageSchema from "../models/leave-message.schema";
+import { SchemaLeaveMessage } from "../types";
 import { checkHex, decimalToHex, hexToDecimal } from "../utils/colors";
 import {
   errorEmbed,
+  leaveOptionsEmbed,
   successEmbed,
   variableEmbed,
-  welcomeOptionsEmbed,
 } from "../utils/embed";
 import { getVariable } from "../utils/variable";
 import {
@@ -20,11 +20,11 @@ import {
   TextInputStyle,
 } from "discord.js";
 
-const editWelcomeConfig = async (
+const editLeaveConfig = async (
   interaction: Interaction,
-  fields: Partial<SchemaWelcomeMessage>,
-): Promise<SchemaWelcomeMessage> => {
-  return await welcomeMessageSchema.findOneAndUpdate(
+  fields: Partial<SchemaLeaveMessage>,
+): Promise<SchemaLeaveMessage> => {
+  return await leaveMessageSchema.findOneAndUpdate(
     {
       _id: interaction.guildId,
     },
@@ -39,13 +39,12 @@ const editWelcomeConfig = async (
   );
 };
 
-const editWelcomeMessage = async (
+const editLeaveMessage = async (
   interaction: MessageComponentInteraction | ModalSubmitInteraction,
-  welcomeConfig: SchemaWelcomeMessage,
+  welcomeConfig: SchemaLeaveMessage,
 ): Promise<void> => {
   try {
     await interaction.message?.edit({
-      content: welcomeConfig.ping_user ? interaction.user.toString() : "",
       embeds: [
         variableEmbed(
           welcomeConfig.hex_color,
@@ -53,7 +52,7 @@ const editWelcomeMessage = async (
           interaction.guild!,
           interaction.user,
         ),
-        welcomeOptionsEmbed(welcomeConfig),
+        leaveOptionsEmbed(welcomeConfig),
       ],
     });
   } catch (error) {
@@ -76,14 +75,13 @@ module.exports = {
 
     const [type, userId] = interaction.customId.split("-");
     const types = [
-      "welcomeMessageEdit",
-      "welcomeMessageUserPing",
-      "welcomeMessageVariables",
-      "welcomeMessageClose",
-      "welcomeMessageReset",
-      "welcomeMessageChannelSelect",
-      "welcomeMessageRoleSelect",
+      "leaveMessageEdit",
+      "leaveMessageVariables",
+      "leaveMessageClose",
+      "leaveMessageReset",
+      "leaveMessageChannelSelect",
     ];
+
     if (!types.includes(type)) return;
     if (userId !== interaction.user.id) {
       return interaction.reply({
@@ -94,26 +92,26 @@ module.exports = {
       });
     }
 
-    const welcomeConfig = await editWelcomeConfig(interaction, {});
+    const leaveConfig = await editLeaveConfig(interaction, {});
 
     switch (type) {
-      case "welcomeMessageEdit":
+      case "leaveMessageEdit":
         if (interaction.isButton()) {
           const modal = new ModalBuilder()
-            .setCustomId(`welcomeMessageEdit-${interaction.user.id}`)
-            .setTitle("Modifiez le message de bienvenue");
+            .setCustomId(`leaveMessageEdit-${interaction.user.id}`)
+            .setTitle("Modifiez le message de départ");
 
           const hex_color = new TextInputBuilder()
             .setCustomId("hex_color")
             .setLabel("Couleur (e.g. #00FF00)")
-            .setValue(decimalToHex(welcomeConfig.hex_color))
+            .setValue(decimalToHex(leaveConfig.hex_color))
             .setStyle(TextInputStyle.Short)
             .setRequired(true);
 
           const message = new TextInputBuilder()
             .setCustomId("message")
             .setLabel("Votre message, avec les variables")
-            .setValue(welcomeConfig.message)
+            .setValue(leaveConfig.message)
             .setStyle(TextInputStyle.Paragraph)
             .setMaxLength(2000)
             .setRequired(true);
@@ -141,61 +139,43 @@ module.exports = {
             });
           }
 
-          welcomeConfig.hex_color = hexToDecimal(hex_color);
-          welcomeConfig.message = message;
+          leaveConfig.hex_color = hexToDecimal(hex_color);
+          leaveConfig.message = message;
 
-          await editWelcomeConfig(interaction, welcomeConfig);
-          await editWelcomeMessage(interaction, welcomeConfig);
+          await editLeaveConfig(interaction, leaveConfig);
+          await editLeaveMessage(interaction, leaveConfig);
         }
         break;
-      case "welcomeMessageUserPing":
-        await interaction.deferUpdate();
-
-        welcomeConfig.ping_user = !welcomeConfig.ping_user;
-
-        await editWelcomeConfig(interaction, welcomeConfig);
-        await editWelcomeMessage(interaction, welcomeConfig);
-        break;
-      case "welcomeMessageVariables":
+      case "leaveMessageVariables":
         await interaction.reply({
           content: getVariable().join("\n"),
           ephemeral: true,
         });
         break;
-      case "welcomeMessageReset":
-        await interaction.deferUpdate();
-
-        welcomeConfig.hex_color = Colors.Green;
-        welcomeConfig.message = `Bienvenue sur **{server}**, {user.mention} !`;
-        welcomeConfig.channel_ids = [];
-        welcomeConfig.role_ids = [];
-        welcomeConfig.ping_user = false;
-
-        await editWelcomeConfig(interaction, welcomeConfig);
-        await editWelcomeMessage(interaction, welcomeConfig);
-
-        break;
-      case "welcomeMessageClose":
+      case "leaveMessageClose":
         await interaction.deferUpdate();
         await interaction.message?.delete().catch(() => null);
         break;
-      case "welcomeMessageChannelSelect":
-        if (!interaction.isChannelSelectMenu()) return;
+      case "leaveMessageReset":
         await interaction.deferUpdate();
 
-        welcomeConfig.channel_ids = interaction.values;
+        leaveConfig.message =
+          "**{user.idname}** nous à quitté, nous sommes maintenant `{server.member_count}` membres.";
+        leaveConfig.hex_color = Colors.Red;
+        leaveConfig.channel_ids = [];
 
-        await editWelcomeConfig(interaction, welcomeConfig);
-        await editWelcomeMessage(interaction, welcomeConfig);
+        await editLeaveConfig(interaction, leaveConfig);
+        await editLeaveMessage(interaction, leaveConfig);
         break;
-      case "welcomeMessageRoleSelect":
-        if (!interaction.isRoleSelectMenu()) return;
+      case "leaveMessageChannelSelect":
+        if (!interaction.isChannelSelectMenu()) return;
+
         await interaction.deferUpdate();
 
-        welcomeConfig.role_ids = interaction.values;
+        leaveConfig.channel_ids = interaction.values;
 
-        await editWelcomeConfig(interaction, welcomeConfig);
-        await editWelcomeMessage(interaction, welcomeConfig);
+        await editLeaveConfig(interaction, leaveConfig);
+        await editLeaveMessage(interaction, leaveConfig);
         break;
     }
   },

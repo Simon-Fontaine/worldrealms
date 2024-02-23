@@ -1,6 +1,6 @@
 import welcomeMessageSchema from "../../models/welcome-message.schema";
 import { SchemaWelcomeMessage } from "../../types";
-import { welcomeEmbed, welcomeOptionsEmbed } from "../../utils/embed";
+import { variableEmbed, welcomeOptionsEmbed } from "../../utils/embed";
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -9,7 +9,6 @@ import {
   ChannelType,
   ChatInputCommandInteraction,
   PermissionFlagsBits,
-  resolveColor,
   RoleSelectMenuBuilder,
   SlashCommandBuilder,
 } from "discord.js";
@@ -19,7 +18,7 @@ module.exports = {
     .setName("welcome")
     .setDescription("Configure les messages de bienvenue.")
     .setDMPermission(false)
-    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
 
   async execute(interaction: ChatInputCommandInteraction) {
     await interaction.deferReply();
@@ -45,15 +44,12 @@ module.exports = {
         .setStyle(ButtonStyle.Primary),
       new ButtonBuilder()
         .setCustomId(`welcomeMessageUserPing-${interaction.user.id}`)
-        .setLabel("Mention Utilisateur")
+        .setLabel("Mention")
         .setStyle(ButtonStyle.Primary),
       new ButtonBuilder()
         .setCustomId(`welcomeMessageVariables-${interaction.user.id}`)
         .setLabel("Variables")
         .setStyle(ButtonStyle.Secondary),
-    );
-
-    const secondActionRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder()
         .setCustomId(`welcomeMessageClose-${interaction.user.id}`)
         .setLabel("Fermer")
@@ -64,7 +60,7 @@ module.exports = {
         .setStyle(ButtonStyle.Danger),
     );
 
-    const thirdActionRow =
+    const secondActionRow =
       new ActionRowBuilder<ChannelSelectMenuBuilder>().addComponents(
         new ChannelSelectMenuBuilder()
           .setChannelTypes(ChannelType.GuildText)
@@ -74,7 +70,7 @@ module.exports = {
           .setMaxValues(6),
       );
 
-    const forthActionRow =
+    const thirdActionRow =
       new ActionRowBuilder<RoleSelectMenuBuilder>().addComponents(
         new RoleSelectMenuBuilder()
           .setCustomId(`welcomeMessageRoleSelect-${interaction.user.id}`)
@@ -86,7 +82,7 @@ module.exports = {
     await interaction.editReply({
       content: welcomeConfig.ping_user ? interaction.user.toString() : "",
       embeds: [
-        welcomeEmbed(
+        variableEmbed(
           welcomeConfig.hex_color,
           welcomeConfig.message,
           interaction.guild!,
@@ -94,12 +90,7 @@ module.exports = {
         ),
         welcomeOptionsEmbed(welcomeConfig),
       ],
-      components: [
-        firstActionRow,
-        secondActionRow,
-        thirdActionRow,
-        forthActionRow,
-      ],
+      components: [firstActionRow, secondActionRow, thirdActionRow],
     });
   },
 };
