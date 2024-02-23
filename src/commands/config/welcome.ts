@@ -1,6 +1,10 @@
 import welcomeMessageSchema from "../../models/welcome-message.schema";
 import { SchemaWelcomeMessage } from "../../types";
-import { variableEmbed, welcomeOptionsEmbed } from "../../utils/embed";
+import {
+  errorEmbed,
+  variableEmbed,
+  welcomeOptionsEmbed,
+} from "../../utils/embed";
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -18,19 +22,44 @@ module.exports = {
     .setName("welcome")
     .setDescription("Configure les messages de bienvenue.")
     .setDMPermission(false)
-    .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
+    .addAttachmentOption((option) =>
+      option
+        .setName("attachment")
+        .setDescription(
+          "Ajouter une image ou un gif à votre message de bienvenue.",
+        )
+        .setRequired(false),
+    ),
 
   async execute(interaction: ChatInputCommandInteraction) {
     await interaction.deferReply();
+
+    const attachment = interaction.options.getAttachment("attachment");
+
+    if (attachment && !attachment.contentType?.startsWith("image")) {
+      return interaction.editReply({
+        embeds: [
+          errorEmbed(
+            "Attention, le fichier joint doit être une image ou un gif.",
+          ),
+        ],
+      });
+    }
 
     const welcomeConfig: SchemaWelcomeMessage =
       await welcomeMessageSchema.findOneAndUpdate(
         {
           _id: interaction.guildId,
         },
-        {
-          _id: interaction.guildId,
-        },
+        attachment && attachment.url
+          ? {
+              _id: interaction.guildId,
+              attachment: attachment.url,
+            }
+          : {
+              _id: interaction.guildId,
+            },
         {
           upsert: true,
           new: true,
@@ -85,6 +114,7 @@ module.exports = {
         variableEmbed(
           welcomeConfig.hex_color,
           welcomeConfig.message,
+          welcomeConfig.attachment,
           interaction.guild!,
           interaction.user,
         ),

@@ -25,6 +25,7 @@ module.exports = {
             variableEmbed(
               welcomeConfig.hex_color,
               welcomeConfig.message,
+              welcomeConfig.attachment,
               member.guild,
               member.user,
             ),

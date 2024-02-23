@@ -20,6 +20,7 @@ module.exports = {
             variableEmbed(
               leaveConfig.hex_color,
               leaveConfig.message,
+              leaveConfig.attachment,
               member.guild,
               member.user,
             ),

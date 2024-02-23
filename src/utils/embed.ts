@@ -52,6 +52,7 @@ export const archiveEmbed = (config: SchemaArchive) => {
 export const variableEmbed = (
   color: number,
   content: string,
+  attachment: string | null,
   server: Guild,
   user: User,
 ) => {
@@ -59,6 +60,7 @@ export const variableEmbed = (
 
   return new EmbedBuilder()
     .setColor(color)
+    .setImage(attachment)
     .setDescription(replaceVariables(content, server, user));
 };
 

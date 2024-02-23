@@ -41,18 +41,19 @@ const editLeaveConfig = async (
 
 const editLeaveMessage = async (
   interaction: MessageComponentInteraction | ModalSubmitInteraction,
-  welcomeConfig: SchemaLeaveMessage,
+  leaveConfig: SchemaLeaveMessage,
 ): Promise<void> => {
   try {
     await interaction.message?.edit({
       embeds: [
         variableEmbed(
-          welcomeConfig.hex_color,
-          welcomeConfig.message,
+          leaveConfig.hex_color,
+          leaveConfig.message,
+          leaveConfig.attachment,
           interaction.guild!,
           interaction.user,
         ),
-        leaveOptionsEmbed(welcomeConfig),
+        leaveOptionsEmbed(leaveConfig),
       ],
     });
   } catch (error) {

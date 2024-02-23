@@ -21,6 +21,10 @@ const schema = new Schema({
     default:
       "**{user.idname}** nous à quitté, nous sommes maintenant `{server.member_count}` membres.",
   },
+  attachment: {
+    type: String,
+    default: null,
+  },
   hex_color: {
     type: Number,
     default: Colors.Red,

@@ -6,7 +6,6 @@ import {
 } from "discord.js";
 
 module.exports = {
-  cooldown: 5,
   data: new SlashCommandBuilder()
     .setName("ping")
     .setDescription("Donne la latence du bot."),

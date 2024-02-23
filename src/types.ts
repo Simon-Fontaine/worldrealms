@@ -29,6 +29,7 @@ export type SchemaWelcomeMessage = {
   role_ids: string[];
   ping_user: boolean;
   message: string;
+  attachment: string | null;
   hex_color: number;
 };
 
@@ -36,6 +37,7 @@ export type SchemaLeaveMessage = {
   _id: string;
   channel_ids: string[];
   message: string;
+  attachment: string | null;
   hex_color: number;
 };
 

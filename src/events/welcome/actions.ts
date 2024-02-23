@@ -51,6 +51,7 @@ const editWelcomeMessage = async (
         variableEmbed(
           welcomeConfig.hex_color,
           welcomeConfig.message,
+          welcomeConfig.attachment,
           interaction.guild!,
           interaction.user,
         ),
@@ -143,6 +144,7 @@ export const welcomeMessageReset = async (interaction: ButtonInteraction) => {
   const welcomeConfig = await editWelcomeConfig(interaction, {
     hex_color: Colors.Green,
     message: "Bienvenue sur **{server}**, {user.mention} !",
+    attachment: null,
     channel_ids: [],
     role_ids: [],
     ping_user: false,

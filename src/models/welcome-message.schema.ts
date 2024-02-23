@@ -16,6 +16,10 @@ const schema = new Schema({
 
   channel_ids: optArray,
   role_ids: optArray,
+  attachment: {
+    type: String,
+    default: null,
+  },
 
   ping_user: {
     type: Boolean,
