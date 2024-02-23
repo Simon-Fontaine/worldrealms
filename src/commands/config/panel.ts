@@ -75,7 +75,7 @@ module.exports = {
       case "create":
         {
           const modal = new ModalBuilder()
-            .setCustomId("ticket-panel-creation")
+            .setCustomId(`panelArchiveModal-${interaction.user.id}`)
             .setTitle("Ticket Panel Creation");
 
           const subject = new TextInputBuilder()

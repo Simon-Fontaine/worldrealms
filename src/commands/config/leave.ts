@@ -38,7 +38,7 @@ module.exports = {
 
     const firstActionRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder()
-        .setCustomId(`leaveMessageEdit-${interaction.user.id}`)
+        .setCustomId(`leaveMessageModal-${interaction.user.id}`)
         .setLabel("Modifier")
         .setStyle(ButtonStyle.Primary),
       new ButtonBuilder()

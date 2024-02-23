@@ -39,7 +39,7 @@ module.exports = {
 
     const firstActionRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder()
-        .setCustomId(`welcomeMessageEdit-${interaction.user.id}`)
+        .setCustomId(`welcomeMessageModal-${interaction.user.id}`)
         .setLabel("Modifier")
         .setStyle(ButtonStyle.Primary),
       new ButtonBuilder()
