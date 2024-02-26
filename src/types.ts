@@ -5,6 +5,23 @@ export type TimeObject = {
   full: string;
 };
 
+export type SchemaTicket = {
+  _id: string;
+  guild_id: string;
+  type: string;
+  label: string;
+  creator_id: string;
+  creator_username: string;
+  claimed_id: string | null | undefined;
+  claimed_username: string | null | undefined;
+  closed_id: string | null | undefined;
+  closed_username: string | null | undefined;
+  added_members: string[];
+  locked: boolean;
+  claimed: boolean;
+  closed: boolean;
+};
+
 export type SchemaRole = {
   _id: string;
   guild_id: string | null;
