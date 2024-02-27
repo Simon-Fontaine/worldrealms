@@ -20,6 +20,8 @@ export type SchemaTicket = {
   locked: boolean;
   claimed: boolean;
   closed: boolean;
+  updatedAt: Date;
+  createdAt: Date;
 };
 
 export type SchemaRole = {

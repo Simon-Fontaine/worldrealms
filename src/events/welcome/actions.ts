@@ -59,9 +59,7 @@ const editWelcomeMessage = async (
       ],
     });
   } catch (error) {
-    await interaction.editReply({
-      embeds: [errorEmbed("Une erreur est survenue lors de la mise à jour.")],
-    });
+    interaction.client.logger.error(error);
   }
 };
 
