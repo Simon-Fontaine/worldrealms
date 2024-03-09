@@ -11,7 +11,7 @@ const SMALL_DATE_FORMAT = "DD[/]MM[/]YYYY HH:mm";
 const NORMAL_DATE_FORMAT = "ddd DD MMM YYYY [at] HH:mm";
 const FULL_DATE_FORMAT = "dddd, MMMM DD YYYY, HH:mm:ss";
 
-export const formatTime = (time: Date | string): TimeObject => {
+export function formatTime(time: Date | string): TimeObject {
   if (typeof time === "string") {
     time = new Date(time);
   }
@@ -27,4 +27,4 @@ export const formatTime = (time: Date | string): TimeObject => {
     normal: date.format(NORMAL_DATE_FORMAT),
     full: date.format(FULL_DATE_FORMAT),
   };
-};
+}

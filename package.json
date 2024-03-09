@@ -28,5 +28,6 @@
     "prettier-plugin-package": "^1.4.0",
     "tsc-watch": "^6.0.4",
     "typescript": "^5.3.3"
-  }
+  },
+  "packageManager": "yarn@4.1.1"
 }

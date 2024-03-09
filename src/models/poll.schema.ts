@@ -27,7 +27,6 @@ const schema = new Schema({
   created_at: {
     type: Date,
     required: true,
-    default: Date.now,
   },
   closed_at: Date,
   expires_at: Date,

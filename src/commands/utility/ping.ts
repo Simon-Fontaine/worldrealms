@@ -14,6 +14,12 @@ module.exports = {
     const websocketLatency =
       interaction.client.ws.ping === -1 ? 0 : interaction.client.ws.ping / 1000;
 
+    // console.log(
+    //   interaction.guild?.emojis.cache
+    //     .map((e) => `${e.name} = "<:${e.name}:${e.id}>"`)
+    //     .join(",\n"),
+    // );
+
     const embed = new EmbedBuilder()
       .setColor(Colors.Blurple)
       .setDescription(

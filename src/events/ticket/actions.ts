@@ -135,3 +135,5 @@ const ticketClose = async (interaction: ButtonInteraction, id: string) => {
     files: [attachment],
   });
 };
+
+// TODO: add the rest of the code

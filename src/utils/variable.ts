@@ -7,7 +7,7 @@ import {
   User,
 } from "discord.js";
 
-export const getVariable = () => {
+export function getVariable() {
   return [
     "**Variables Utilisateurs**",
     "`{user}` `{user.mention}` | Mention de l'utilisateur",
@@ -29,13 +29,9 @@ export const getVariable = () => {
     "**Variables Salon**",
     "`{channel.rules}` | Mention du salon des règles",
   ];
-};
+}
 
-export const replaceVariables = (
-  content: string,
-  server: Guild,
-  user: User,
-) => {
+export function replaceVariables(content: string, server: Guild, user: User) {
   const owner = server.members.cache.get(server.ownerId);
 
   const variables = {
@@ -62,4 +58,4 @@ export const replaceVariables = (
   }
 
   return content;
-};
+}

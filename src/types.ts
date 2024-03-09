@@ -1,3 +1,25 @@
+export type PollChoice = {
+  choice: string;
+  emoji: string;
+  voters: string[];
+};
+
+export type Poll = {
+  _id: string;
+  guild_id: string;
+  channel_id: string;
+  result_message_id: string | null | undefined;
+  creator_id: string;
+  creator_username: string;
+  question: string;
+  choices: PollChoice[];
+  allowed_roles: string[];
+  max_choices: number | null | undefined;
+  created_at: Date;
+  closed_at: Date | null | undefined;
+  expires_at: Date | null | undefined;
+};
+
 export type TimeObject = {
   date: Date;
   small: string;

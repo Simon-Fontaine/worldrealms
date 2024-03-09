@@ -121,7 +121,7 @@ module.exports = {
           const date = formatTime(dayjs().add(1, "hour").toDate());
 
           const modal = new ModalBuilder()
-            .setCustomId(`pollCreate`)
+            .setCustomId(`pollCreate-${interaction.user.id}`)
             .setTitle("Créer un sondage");
 
           const question = new TextInputBuilder()
