@@ -191,7 +191,7 @@ export function pollEmbed(poll: Poll, isInformational: boolean = false) {
     },
     {
       name: "Total de Votes",
-      value: isInformational ? `\`${totalVotes}\`` : "Caché",
+      value: isInformational || poll.closed_at ? `\`${totalVotes}\`` : "Caché",
       inline: true,
     },
     {
@@ -202,9 +202,9 @@ export function pollEmbed(poll: Poll, isInformational: boolean = false) {
     {
       name: "Expire le",
       value:
-        isInformational && poll.expires_at
+        isInformational && poll.expires_at && !poll.closed_at
           ? time(poll.expires_at, "R")
-          : poll.expires_at
+          : poll.expires_at && !poll.closed_at
             ? `${time(poll.expires_at, "f")} | ${time(poll.expires_at, "R")}`
             : null,
       inline: isInformational,
@@ -212,8 +212,12 @@ export function pollEmbed(poll: Poll, isInformational: boolean = false) {
     {
       name: "Fermé le",
       value:
-        isInformational && poll.closed_at ? time(poll.closed_at, "R") : null,
-      inline: true,
+        isInformational && poll.closed_at
+          ? time(poll.closed_at, "R")
+          : poll.closed_at
+            ? `${time(poll.closed_at, "f")} | ${time(poll.closed_at, "R")}`
+            : null,
+      inline: isInformational,
     },
     {
       name: "Message",
@@ -225,7 +229,7 @@ export function pollEmbed(poll: Poll, isInformational: boolean = false) {
   ].filter((field) => field.value !== null);
 
   return new EmbedBuilder()
-    .setColor(Colors.Blurple)
+    .setColor(poll.closed_at ? Colors.Red : Colors.Blurple)
     .setTitle(poll.question)
     .setURL(
       `https://discord.com/channels/${poll.guild_id}/${poll.channel_id}/${poll._id}`,
@@ -233,7 +237,7 @@ export function pollEmbed(poll: Poll, isInformational: boolean = false) {
     .setFields(
       fields.map((field) => ({
         ...field,
-        value: field.value || "", // Set value to an empty string if it is null
+        value: field.value || "",
       })),
     );
 }

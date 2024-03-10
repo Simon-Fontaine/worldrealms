@@ -1,5 +1,12 @@
 import pollSchema from "../../models/poll.schema";
-import { errorEmbed } from "../../utils/embed";
+import { PollChoice } from "../../types";
+import {
+  createProgressBar,
+  errorEmbed,
+  pollEmbed,
+  successEmbed,
+} from "../../utils/embed";
+import { Emojis } from "../../utils/emojis";
 import { formatTime } from "../../utils/time";
 import dayjs from "dayjs";
 import {
@@ -7,9 +14,13 @@ import {
   AutocompleteInteraction,
   ChannelType,
   ChatInputCommandInteraction,
+  Colors,
+  EmbedBuilder,
+  GuildTextBasedChannel,
   ModalBuilder,
   PermissionFlagsBits,
   SlashCommandBuilder,
+  StringSelectMenuBuilder,
   TextInputBuilder,
   TextInputStyle,
 } from "discord.js";
@@ -176,6 +187,175 @@ module.exports = {
           modal.addComponents(...rows);
 
           await interaction.showModal(modal);
+        }
+        break;
+      case "end":
+        {
+          await interaction.deferReply({ ephemeral: true });
+          const id = interaction.options.getString("id");
+
+          if (id === defaultID)
+            return await interaction.editReply({
+              embeds: [errorEmbed("Veuillez à bien sélectionner un sondage.")],
+            });
+
+          const poll = await pollSchema.findOne({
+            _id: id,
+            guild_id: interaction.guildId,
+          });
+
+          if (!poll)
+            return await interaction.editReply({
+              embeds: [errorEmbed("Aucun sondage trouvé avec cet ID.")],
+            });
+
+          if (poll.closed_at) {
+            return await interaction.editReply({
+              embeds: [errorEmbed("Ce sondage est déjà terminé.")],
+            });
+          }
+
+          poll.closed_at = new Date();
+
+          const channel = interaction.guild?.channels.cache.get(
+            poll.channel_id,
+          ) as GuildTextBasedChannel;
+          const message = await channel?.messages.fetch(poll._id);
+
+          const totalVotes = poll.choices.reduce(
+            (acc: number, choice: PollChoice) => acc + choice.voters.length,
+            0,
+          );
+          const resultString = poll.choices
+            .map((choice: PollChoice) => {
+              return `${choice.emoji} - ${createProgressBar(choice.voters.length, totalVotes)} ${choice.voters.length} votes`;
+            })
+            .join("\n");
+
+          if (message) {
+            await message.edit({ embeds: [pollEmbed(poll)], components: [] });
+            const resultMessage = await message.reply({
+              embeds: [
+                new EmbedBuilder()
+                  .setColor(Colors.Blurple)
+                  .setTitle("Résultats")
+                  .setURL(message.url)
+                  .setDescription(resultString),
+              ],
+            });
+            poll.result_message_id = resultMessage.id;
+          }
+
+          await poll.save();
+
+          await interaction.editReply({
+            embeds: [
+              successEmbed(
+                `Le sondage \`${poll._id}\` a été terminé avec succès.`,
+              ),
+            ],
+          });
+        }
+        break;
+      case "delete":
+        {
+          await interaction.deferReply({ ephemeral: true });
+          const id = interaction.options.getString("id");
+
+          if (id === defaultID)
+            return await interaction.editReply({
+              embeds: [errorEmbed("Veuillez à bien sélectionner un sondage.")],
+            });
+
+          const poll = await pollSchema.findOneAndDelete({
+            _id: id,
+            guild_id: interaction.guildId,
+          });
+
+          if (!poll)
+            return await interaction.editReply({
+              embeds: [errorEmbed("Aucun sondage trouvé avec cet ID.")],
+            });
+
+          const channel = interaction.guild?.channels.cache.get(
+            poll.channel_id,
+          ) as GuildTextBasedChannel;
+
+          try {
+            const message = await channel.messages.fetch(poll._id);
+            await message.delete();
+          } catch (ignored) {}
+
+          try {
+            const message = await channel.messages.fetch(
+              poll.result_message_id,
+            );
+            await message.delete();
+          } catch (ignored) {}
+
+          await interaction.editReply({
+            embeds: [successEmbed("Sondage supprimé avec succès.")],
+          });
+        }
+        break;
+      case "list":
+        {
+          await interaction.deferReply({ ephemeral: true });
+
+          const status = interaction.options.getString("status");
+          const id = interaction.options.getString("id");
+          const channel = interaction.options.getChannel("channel");
+          const user = interaction.options.getUser("user");
+
+          const filter = {
+            guild_id: interaction.guildId,
+            ...(status &&
+              status !== "tous" && {
+                closed_at:
+                  status === "termine" ? { $ne: undefined } : undefined,
+              }),
+            ...(id && { _id: id }),
+            ...(channel && { channel_id: channel.id }),
+            ...(user && { creator_id: user.id }),
+          };
+
+          const polls = await pollSchema
+            .find(filter)
+            .limit(25)
+            .sort("-created_at");
+
+          if (polls.length <= 0)
+            return await interaction.editReply({
+              embeds: [errorEmbed("Aucun sondage trouvé.")],
+            });
+
+          if (id) {
+            const poll = polls[0];
+            return await interaction.editReply({
+              embeds: [pollEmbed(poll, true)],
+            });
+          }
+
+          const options = polls.map((poll) => ({
+            label: poll._id,
+            value: poll._id,
+            emoji: poll.closed_at ? Emojis.lock : Emojis.key,
+          }));
+
+          const firstRow =
+            new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+              new StringSelectMenuBuilder()
+                .setCustomId(`pollList-${interaction.user.id}`)
+                .setPlaceholder(
+                  "Sélectionnez un sondage pour plus d'informations.",
+                )
+                .addOptions(options),
+            );
+
+          await interaction.editReply({
+            content: "Sélectionnez un sondage pour plus d'informations.",
+            components: [firstRow],
+          });
         }
         break;
     }

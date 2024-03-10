@@ -1,5 +1,13 @@
 import { errorEmbed } from "../utils/embed";
-import { pollCreate } from "./poll/actions";
+import {
+  pollAllowedRoles,
+  pollCancel,
+  pollConfirm,
+  pollCreate,
+  pollList,
+  pollMaxChoices,
+  pollVote,
+} from "./poll/actions";
 import { Events, Interaction } from "discord.js";
 
 module.exports = {
@@ -13,6 +21,12 @@ module.exports = {
       return;
 
     const [actionName, userId] = interaction.customId.split("-");
+
+    if (actionName === "pollVote") {
+      console.log("pollVote");
+      if (!interaction.isButton()) return;
+      return await pollVote(interaction);
+    }
 
     if (actionName.startsWith("poll")) {
       if (userId !== interaction.user.id) {
@@ -29,6 +43,31 @@ module.exports = {
           console.log("pollCreate");
           if (!interaction.isModalSubmit()) return;
           await pollCreate(interaction);
+          break;
+        case "pollConfirm":
+          console.log("pollConfirm");
+          if (!interaction.isButton()) return;
+          await pollConfirm(interaction);
+          break;
+        case "pollCancel":
+          console.log("pollCancel");
+          if (!interaction.isButton()) return;
+          await pollCancel(interaction);
+          break;
+        case "pollAllowedRoles":
+          console.log("pollAllowedRoles");
+          if (!interaction.isRoleSelectMenu()) return;
+          await pollAllowedRoles(interaction);
+          break;
+        case "pollMaxChoices":
+          console.log("pollMaxChoices");
+          if (!interaction.isStringSelectMenu()) return;
+          await pollMaxChoices(interaction);
+          break;
+        case "pollList":
+          console.log("pollList");
+          if (!interaction.isStringSelectMenu()) return;
+          await pollList(interaction);
           break;
       }
     }
