@@ -13,9 +13,10 @@ export interface Task {
 export class TaskHandler {
   private tasks: Task[] = [];
   private intervalIds: NodeJS.Timeout[] = [];
+
   private logger = RubbyLogger({
-    logName: "TaskHandler",
-    level: "info",
+    logName: "Tasks",
+    level: node_env === "production" ? "info" : "debug",
     directory: node_env === "production" ? "dist" : "src",
   });
 

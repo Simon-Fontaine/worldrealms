@@ -13,7 +13,7 @@ class EndPollsTask {
   readonly interval: number;
 
   constructor() {
-    this.interval = 1000 * 15;
+    this.interval = 1000 * 10;
   }
 
   async run(client: Client): Promise<void> {

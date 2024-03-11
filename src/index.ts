@@ -19,8 +19,8 @@ import path from "path";
     });
 
     client.logger = RubbyLogger({
-      logName: "Rubby",
-      level: "silly",
+      logName: "Client",
+      level: node_env === "production" ? "info" : "debug",
       directory: node_env === "production" ? "dist" : "src",
     });
 
