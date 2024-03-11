@@ -23,7 +23,7 @@ module.exports = {
     const [actionName, userId] = interaction.customId.split("-");
 
     if (actionName === "pollVote") {
-      console.log("pollVote");
+      interaction.client.logger.debug("pollVote");
       if (!interaction.isButton()) return;
       return await pollVote(interaction);
     }
@@ -40,32 +40,32 @@ module.exports = {
 
       switch (actionName) {
         case "pollCreate":
-          console.log("pollCreate");
+          interaction.client.logger.debug("pollCreate");
           if (!interaction.isModalSubmit()) return;
           await pollCreate(interaction);
           break;
         case "pollConfirm":
-          console.log("pollConfirm");
+          interaction.client.logger.debug("pollConfirm");
           if (!interaction.isButton()) return;
           await pollConfirm(interaction);
           break;
         case "pollCancel":
-          console.log("pollCancel");
+          interaction.client.logger.debug("pollCancel");
           if (!interaction.isButton()) return;
           await pollCancel(interaction);
           break;
         case "pollAllowedRoles":
-          console.log("pollAllowedRoles");
+          interaction.client.logger.debug("pollAllowedRoles");
           if (!interaction.isRoleSelectMenu()) return;
           await pollAllowedRoles(interaction);
           break;
         case "pollMaxChoices":
-          console.log("pollMaxChoices");
+          interaction.client.logger.debug("pollMaxChoices");
           if (!interaction.isStringSelectMenu()) return;
           await pollMaxChoices(interaction);
           break;
         case "pollList":
-          console.log("pollList");
+          interaction.client.logger.debug("pollList");
           if (!interaction.isStringSelectMenu()) return;
           await pollList(interaction);
           break;

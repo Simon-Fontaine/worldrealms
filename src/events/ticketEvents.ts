@@ -26,7 +26,7 @@ module.exports = {
       await interaction.deferReply({ ephemeral: true });
 
       if (actionName === "ticketOpen") {
-        console.log("ticketOpen");
+        interaction.client.logger.debug("ticketOpen");
         if (!interaction.isButton()) return;
         return await ticketOpen(interaction);
       }
@@ -59,23 +59,23 @@ module.exports = {
 
       switch (actionName) {
         case "ticketClose":
-          console.log("ticketClose");
+          interaction.client.logger.debug("ticketClose");
           if (!interaction.isButton()) return;
           await ticketClose(interaction, ticket);
           break;
         case "ticketLock":
-          console.log("ticketLock");
+          interaction.client.logger.debug("ticketLock");
           if (!interaction.isButton()) return;
           await ticketLock(interaction, ticket);
           break;
         case "ticketAddUser":
-          console.log("ticketAddUser");
+          interaction.client.logger.debug("ticketAddUser");
           if (!interaction.isUserSelectMenu() && !interaction.isButton())
             return;
           await ticketAddUser(interaction, ticket);
           break;
         case "ticketClaim":
-          console.log("ticketClaim");
+          interaction.client.logger.debug("ticketClaim");
           if (!interaction.isButton()) return;
           await ticketClaim(interaction, ticket);
           break;

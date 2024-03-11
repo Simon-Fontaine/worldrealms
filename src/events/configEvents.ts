@@ -51,42 +51,42 @@ module.exports = {
 
       switch (actionName) {
         case "welcomeMessageModal":
-          console.log("welcomeMessageModal");
+          interaction.client.logger.debug("welcomeMessageModal");
           if (!interaction.isButton()) return;
           await welcomeMessageModal(interaction);
           break;
         case "welcomeMessageEdit":
-          console.log("welcomeMessageEdit");
+          interaction.client.logger.debug("welcomeMessageEdit");
           if (!interaction.isModalSubmit()) return;
           await welcomeMessageEdit(interaction);
           break;
         case "welcomeMessageUserPing":
-          console.log("welcomeMessageUserPing");
+          interaction.client.logger.debug("welcomeMessageUserPing");
           if (!interaction.isButton()) return;
           await welcomeMessageUserPing(interaction);
           break;
         case "welcomeMessageVariables":
-          console.log("welcomeMessageVariables");
+          interaction.client.logger.debug("welcomeMessageVariables");
           if (!interaction.isButton()) return;
           await welcomeMessageVariables(interaction);
           break;
         case "welcomeMessageClose":
-          console.log("welcomeMessageClose");
+          interaction.client.logger.debug("welcomeMessageClose");
           if (!interaction.isButton()) return;
           await welcomeMessageClose(interaction);
           break;
         case "welcomeMessageReset":
-          console.log("welcomeMessageReset");
+          interaction.client.logger.debug("welcomeMessageReset");
           if (!interaction.isButton()) return;
           await welcomeMessageReset(interaction);
           break;
         case "welcomeMessageChannelSelect":
-          console.log("welcomeMessageChannelSelect");
+          interaction.client.logger.debug("welcomeMessageChannelSelect");
           if (!interaction.isChannelSelectMenu()) return;
           await welcomeMessageChannelSelect(interaction);
           break;
         case "welcomeMessageRoleSelect":
-          console.log("welcomeMessageRoleSelect");
+          interaction.client.logger.debug("welcomeMessageRoleSelect");
           if (!interaction.isRoleSelectMenu()) return;
           await welcomeMessageRoleSelect(interaction);
           break;
@@ -103,32 +103,32 @@ module.exports = {
 
       switch (actionName) {
         case "leaveMessageModal":
-          console.log("leaveMessageModal");
+          interaction.client.logger.debug("leaveMessageModal");
           if (!interaction.isButton()) return;
           await leaveMessageModal(interaction);
           break;
         case "leaveMessageEdit":
-          console.log("leaveMessageEdit");
+          interaction.client.logger.debug("leaveMessageEdit");
           if (!interaction.isModalSubmit()) return;
           await leaveMessageEdit(interaction);
           break;
         case "leaveMessageVariables":
-          console.log("leaveMessageVariables");
+          interaction.client.logger.debug("leaveMessageVariables");
           if (!interaction.isButton()) return;
           await leaveMessageVariables(interaction);
           break;
         case "leaveMessageClose":
-          console.log("leaveMessageClose");
+          interaction.client.logger.debug("leaveMessageClose");
           if (!interaction.isButton()) return;
           await leaveMessageClose(interaction);
           break;
         case "leaveMessageReset":
-          console.log("leaveMessageReset");
+          interaction.client.logger.debug("leaveMessageReset");
           if (!interaction.isButton()) return;
           await leaveMessageReset(interaction);
           break;
         case "leaveMessageChannelSelect":
-          console.log("leaveMessageChannelSelect");
+          interaction.client.logger.debug("leaveMessageChannelSelect");
           if (!interaction.isChannelSelectMenu()) return;
           await leaveMessageChannelSelect(interaction);
           break;
@@ -145,32 +145,32 @@ module.exports = {
 
       switch (actionName) {
         case "panelArchiveModal":
-          console.log("panelArchiveModal");
+          interaction.client.logger.debug("panelArchiveModal");
           if (!interaction.isModalSubmit()) return;
           await panelArchiveModal(interaction);
           break;
         case "panelArchivePermission":
-          console.log("panelArchivePermission");
+          interaction.client.logger.debug("panelArchivePermission");
           if (!interaction.isButton()) return;
           await panelArchivePermission(interaction);
           break;
         case "panelArchiveClose":
-          console.log("panelArchiveClose");
+          interaction.client.logger.debug("panelArchiveClose");
           if (!interaction.isButton()) return;
           await panelArchiveClose(interaction);
           break;
         case "panelArchiveReset":
-          console.log("panelArchiveReset");
+          interaction.client.logger.debug("panelArchiveReset");
           if (!interaction.isButton()) return;
           await panelArchiveReset(interaction);
           break;
         case "panelArchiveUser":
-          console.log("panelArchiveUser");
+          interaction.client.logger.debug("panelArchiveUser");
           if (!interaction.isChannelSelectMenu()) return;
           await panelArchiveUser(interaction);
           break;
         case "panelArchiveStaff":
-          console.log("panelArchiveStaff");
+          interaction.client.logger.debug("panelArchiveStaff");
           if (!interaction.isChannelSelectMenu()) return;
           await panelArchiveStaff(interaction);
           break;
