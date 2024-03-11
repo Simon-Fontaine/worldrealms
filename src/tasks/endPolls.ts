@@ -49,7 +49,7 @@ class EndPollsTask {
     const guild = client.guilds.cache.get(poll.guild_id);
     if (!guild) {
       client.logger.warn(`Guild not found for poll: ${poll._id}`);
-      await poll.remove();
+      await pollSchema.deleteOne({ _id: poll._id, guild_id: poll.guild_id });
       return;
     }
 
@@ -60,16 +60,16 @@ class EndPollsTask {
       client.logger.warn(
         `Channel not found for poll in guild ${guild.name} (${guild.id}): ${poll._id}`,
       );
-      await poll.remove();
+      await pollSchema.deleteOne({ _id: poll._id, guild_id: poll.guild_id });
       return;
     }
 
     const message = await channel.messages.fetch(poll._id).catch(() => null);
     if (!message) {
       client.logger.warn(
-        `Message not found for poll in channel ${channel.name} (${channel.id}) in guild ${guild.name} (${guild.id}): ${poll._id}`,
+        `Message not found for poll in guild ${guild.name} (${guild.id}): ${poll._id}`,
       );
-      await poll.remove();
+      await pollSchema.deleteOne({ _id: poll._id, guild_id: poll.guild_id });
       return;
     }
 
