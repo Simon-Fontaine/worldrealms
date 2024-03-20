@@ -6,6 +6,8 @@ import fs from "fs/promises";
 import mongoose from "mongoose";
 import path from "path";
 
+// test pour yuka
+
 (async () => {
   try {
     const client = new Client({
